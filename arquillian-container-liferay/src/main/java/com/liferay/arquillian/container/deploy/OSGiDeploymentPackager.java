@@ -519,9 +519,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	private static final String _MANIFEST_FILE = "/META-INF/MANIFEST.MF";
 
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
-		"/META-INF/services" + RemoteLoadableExtension.class.getCanonicalName();
+		"/META-INF/services/" + RemoteLoadableExtension.class.getCanonicalName();
 
 	private static final String _TEST_RUNNER_EXTENSION_FILE =
-		"/META-INF/services" + TestRunner.class.getCanonicalName();
+		"/META-INF/services/" + TestRunner.class.getCanonicalName();
 
 }
