@@ -26,10 +26,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -120,72 +124,72 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.core", "arquillian-core-api",
-				"1.1.2.Final"));
+				"1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.core",
-				"arquillian-core-impl-base","1.1.2.Final"));
+				"arquillian-core-impl-base","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.core", "arquillian-core-spi",
-				"1.1.2.Final"));
+				"1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.test", "arquillian-test-api",
-				"1.1.2.Final"));
+				"1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.test",
-				"arquillian-test-impl-base","1.1.2.Final"));
+				"arquillian-test-impl-base","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.test", "arquillian-test-spi",
-				"1.1.2.Final"));
+				"1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.2.Final"));
+				"arquillian-container-spi","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-impl-base","1.1.2.Final"));
+				"arquillian-container-impl-base","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-spi","1.1.2.Final"));
+				"arquillian-container-spi","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-api","1.1.2.Final"));
+				"arquillian-container-test-api","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-impl-base","1.1.2.Final"));
+				"arquillian-container-test-impl-base","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.container",
-				"arquillian-container-test-spi","1.1.2.Final"));
+				"arquillian-container-test-spi","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-core","1.1.2.Final"));
+				"arquillian-junit-core","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.junit",
-				"arquillian-junit-container","1.1.2.Final"));
+				"arquillian-junit-container","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
@@ -195,7 +199,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.arquillian.protocol",
-				"arquillian-protocol-jmx","1.1.2.Final"));
+				"arquillian-protocol-jmx","1.1.6.Final"));
 
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
@@ -209,13 +213,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getClassPaths().add(
 			addDependencyToArchive(
 				javaArchive, "org.jboss.shrinkwrap", "shrinkwrap-spi","1.1.2"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(
-				javaArchive, "org.hamcrest","hamcrest-core","1.3"));
-
-		manifestConfig.getClassPaths().add(
-			addDependencyToArchive(javaArchive, "junit","junit","4.11"));
 	}
 
 	private void addBundleClasspath(ManifestConfig manifestConfig) {
@@ -233,28 +230,11 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 			String version)
 		throws Exception {
 
-		String filespec = groupId + ":" + artifactId + ":jar:" + version;
+		File file = resolveMavenFile(groupId, artifactId, version);
 
-		MavenResolverSystem resolver = Maven.resolver();
+		String path = "lib/" + file.getName();
 
-		MavenStrategyStage mavenStrategyStage = resolver.resolve(filespec);
-
-		MavenFormatStage mavenFormatStage =
-			mavenStrategyStage.withoutTransitivity();
-
-		File[] resolved = mavenFormatStage.asFile();
-
-		if (resolved == null || resolved.length == 0)
-			throw new BundleException(
-				"Cannot obtain maven artifact: " + filespec);
-
-		if (resolved.length > 1)
-			throw new BundleException(
-				"Multiple maven artifacts for: " + filespec);
-
-		String path = "lib/" + resolved[0].getName();
-
-		javaArchive.addAsResource(new FileAsset(resolved[0]), path);
+		javaArchive.addAsResource(new FileAsset(file), path);
 
 		return path;
 	}
@@ -267,7 +247,6 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		for (String importValue : manifestConfig.getImports()) {
 			if (!importValue.contains("org.jboss.arquillian") &&
-				!importValue.contains("junit") &&
 				!importValue.contains(Inject.class.getPackage().getName())) {
 
 				filteredImports.add(importValue);
@@ -319,7 +298,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		javaArchive.add(manifestAsset, _ACTIVATORS_FILE);
 	}
 
-	private void addOsgiImports(ManifestConfig manifestConfig) {
+	private void addOsgiImports(ManifestConfig manifestConfig)
+		throws BundleException, IOException {
+
 		manifestConfig.getImports().add("org.osgi.framework");
 		manifestConfig.getImports().add("javax.management");
 		manifestConfig.getImports().add("javax.management.*");
@@ -328,6 +309,10 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		manifestConfig.getImports().add("org.osgi.service.packageadmin");
 		manifestConfig.getImports().add("org.osgi.service.startlevel");
 		manifestConfig.getImports().add("org.osgi.util.tracker");
+		manifestConfig.getImports().addAll(
+			listPackagesInJarFile("org.hamcrest", "hamcrest-core", "1.3"));
+		manifestConfig.getImports().addAll(
+			listPackagesInJarFile("junit", "junit", "4.12"));
 	}
 
 	private ManifestConfig getManifestConfig(JavaArchive javaArchive)
@@ -501,6 +486,69 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 		}
 	}
 
+	private Set<String> listPackagesInJarFile(
+			String groupId, String artifactId, String version)
+		throws BundleException, IOException {
+
+		Set<String> packageNames = new HashSet<>();
+
+		File file = resolveMavenFile(groupId, artifactId, version);
+
+		try (JarFile jarFile = new JarFile(file)) {
+			Enumeration<JarEntry> enumeration = jarFile.entries();
+
+			while (enumeration.hasMoreElements()) {
+				JarEntry jarEntry = enumeration.nextElement();
+
+				if (!jarEntry.isDirectory()) {
+					String name = jarEntry.getName();
+
+					if (name.endsWith(".class")) {
+						int index = name.lastIndexOf('/');
+
+						if (index >= 0) {
+							name = name.substring(0, index);
+
+							if (!name.isEmpty()) {
+								packageNames.add(name.replace('/', '.'));
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return packageNames;
+	}
+
+	private File resolveMavenFile(
+			String groupId, String artifactId, String version)
+		throws BundleException {
+
+		String filespec = groupId + ":" + artifactId + ":jar:" + version;
+
+		MavenResolverSystem resolver = Maven.resolver();
+
+		MavenStrategyStage mavenStrategyStage = resolver.resolve(filespec);
+
+		MavenFormatStage mavenFormatStage =
+			mavenStrategyStage.withoutTransitivity();
+
+		File[] resolved = mavenFormatStage.asFile();
+
+		if (resolved == null || resolved.length == 0) {
+			throw new BundleException(
+				"Cannot obtain maven artifact: " + filespec);
+		}
+
+		if (resolved.length > 1) {
+			throw new BundleException(
+				"Multiple maven artifacts for: " + filespec);
+		}
+
+		return resolved[0];
+	}
+
 	private void validateBundleArchive(Archive<?> archive) throws Exception {
 		Manifest manifest = null;
 
@@ -519,9 +567,9 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 	private static final String _MANIFEST_FILE = "/META-INF/MANIFEST.MF";
 
 	private static final String _REMOTE_LOADABLE_EXTENSION_FILE =
-		"/META-INF/services" + RemoteLoadableExtension.class.getCanonicalName();
+		"/META-INF/services/" + RemoteLoadableExtension.class.getCanonicalName();
 
 	private static final String _TEST_RUNNER_EXTENSION_FILE =
-		"/META-INF/services" + TestRunner.class.getCanonicalName();
+		"/META-INF/services/" + TestRunner.class.getCanonicalName();
 
 }
