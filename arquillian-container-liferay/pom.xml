@@ -34,7 +34,11 @@
 			<artifactId>org.osgi.enterprise</artifactId>
 			<version>5.0.0</version>
 		</dependency>
-
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 </project>

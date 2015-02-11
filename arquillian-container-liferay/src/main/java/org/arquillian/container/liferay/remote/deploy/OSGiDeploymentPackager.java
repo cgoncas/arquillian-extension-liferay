@@ -14,6 +14,7 @@
 
 package org.arquillian.container.liferay.remote.deploy;
 
+import com.liferay.arquillian.junit.Arquillian;
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
 import org.arquillian.container.liferay.remote.enricher.Inject;
 import org.arquillian.container.liferay.remote.runner.JUnitBundleTestRunner;
@@ -247,6 +248,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 
 		for (String importValue : manifestConfig.getImports()) {
 			if (!importValue.contains("org.jboss.arquillian") &&
+				!importValue.contains("com.liferay.arquillian.junit") &&
 				!importValue.contains(Inject.class.getPackage().getName())) {
 
 				filteredImports.add(importValue);
@@ -392,6 +394,7 @@ public class OSGiDeploymentPackager implements DeploymentPackager {
 				, _TEST_RUNNER_EXTENSION_FILE);
 
 			javaArchive.addClass(JUnitBundleTestRunner.class);
+			javaArchive.addClass(Arquillian.class);
 
 			return javaArchive;
 		}
