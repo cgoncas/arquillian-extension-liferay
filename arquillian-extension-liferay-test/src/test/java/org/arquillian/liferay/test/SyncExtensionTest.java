@@ -12,22 +12,25 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.wait;
+package org.arquillian.liferay.test;
 
-import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
+import org.arquillian.liferay.deploymentscenario.annotations.BndFile;
+
+import org.jboss.arquillian.junit.Arquillian;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author Cristina González
  */
-public class LiferayWaitForServiceExtension implements RemoteLoadableExtension {
+@BndFile("src/test/resources/bnd.bnd")
+@RunWith(Arquillian.class)
+public class SyncExtensionTest {
 
-	@Override
-	public void register(ExtensionBuilder builder) {
-		if (Validate.classExists(
-				"org.springframework.context.ApplicationContext")) {
-
-			builder.observer(LiferayWaitForServiceObserver.class);
-		}
+	@Test
+	public void testAddGroup() {
+		System.out.println("Test Add Group");
 	}
 
 }
