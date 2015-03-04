@@ -12,18 +12,32 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.bundleclasspath;
+package org.arquillian.container.liferay.remote.deploy.processor.test.mock;
 
-import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.jboss.arquillian.core.spi.ServiceLoader;
 
 /**
  * @author Cristina González
  */
-public class BundleClassPathExtension implements RemoteLoadableExtension {
+public class DummyServiceLoaderWithoutAuxiliaryArchive
+	implements ServiceLoader {
 
 	@Override
-	public void register(ExtensionBuilder builder) {
-		builder.observer(BundleClassPathObserver.class);
+	public <T> Collection<T> all(Class<T> aClass) {
+		return new ArrayList<>();
+	}
+
+	@Override
+	public <T> T onlyOne(Class<T> aClass) {
+		return null;
+	}
+
+	@Override
+	public <T> T onlyOne(Class<T> aClass, Class<? extends T> aClass1) {
+		return null;
 	}
 
 }
