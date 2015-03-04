@@ -17,6 +17,7 @@ package org.arquillian.container.liferay.remote.deploy.processor.test.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -31,7 +32,9 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  */
 public class ManifestUtil {
 
-	public static void createManifest(JavaArchive javaArchive) throws IOException {
+	public static void createManifest(JavaArchive javaArchive)
+		throws IOException {
+
 		ManifestUtil.createManifest(javaArchive, new ArrayList<String>());
 	}
 
@@ -49,16 +52,21 @@ public class ManifestUtil {
 			new Attributes.Name("Bundle-ManifestVersion"), "1");
 
 		if ((imports != null) && !imports.isEmpty()) {
-			String importsString = "";
+			StringBuilder sb = new StringBuilder();
 
 			for (String importValue : imports) {
-				importsString =
-					importsString.isEmpty() ? importValue :
-						importsString + "," + importValue;
+				sb.append(importValue);
+				sb.append(",");
+			}
+
+			int length = sb.length();
+
+			if (length > 0) {
+				sb.setLength(length - 1);
 			}
 
 			manifest.getMainAttributes().put(
-				new Attributes.Name("Import-Package"), importsString);
+				new Attributes.Name("Import-Package"), sb.toString());
 		}
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();

@@ -26,10 +26,10 @@ import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
 import org.arquillian.container.liferay.remote.deploy.processor.AddAllExtensionsToApplicationArchiveProcessor;
-import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockInstanceProducerImpl;
-import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockServiceLoaderWithJarAuxiliaryArchive;
-import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockServiceLoaderWithOSGIBundleAuxiliaryArchive;
-import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockServiceLoaderWithoutAuxiliaryArchive;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.DummyInstanceProducerImpl;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.DummyServiceLoaderWithJarAuxiliaryArchive;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchive;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.DummyServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.liferay.remote.deploy.processor.test.util.ManifestUtil;
 
 import org.jboss.arquillian.core.spi.ServiceLoader;
@@ -58,7 +58,10 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
+		AddAllExtensionsToApplicationArchiveProcessor processor = 
+			getProcessorWithoutAuxiliaryArchive();
+		
+		processor.process(javaArchive, testClass);
 
 		//then:
 		Manifest manifest = getManifest((JavaArchive)javaArchive);
@@ -85,7 +88,10 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 
 		try {
 			//when:
-			getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
+			AddAllExtensionsToApplicationArchiveProcessor processor = 
+				getProcessorWithoutAuxiliaryArchive();
+			
+			processor.process(javaArchive, testClass);
 
 			Assert.fail(
 				"If a JavaArchive doesn't contain a Manifest, should fail");
@@ -115,7 +121,10 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
+		AddAllExtensionsToApplicationArchiveProcessor processor = 
+			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+		
+		processor.process(javaArchive, testClass);
 
 		//then:
 		Manifest manifest = getManifest(javaArchive);
@@ -148,7 +157,10 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		getProcessorWithJarAuxiliaryArchive().process(javaArchive, testClass);
+		AddAllExtensionsToApplicationArchiveProcessor processor = 
+			getProcessorWithJarAuxiliaryArchive();
+		
+		processor.process(javaArchive, testClass);
 
 		//then:
 		Manifest manifest = getManifest(javaArchive);
@@ -185,8 +197,10 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		getProcessorWithOSGIJarAuxiliaryArchive(imports).process(
-			javaArchive, testClass);
+		AddAllExtensionsToApplicationArchiveProcessor processor = 
+			getProcessorWithOSGIJarAuxiliaryArchive(imports);
+		
+		processor.process(javaArchive, testClass);
 
 		//then:
 		Manifest manifest = getManifest(javaArchive);
@@ -227,7 +241,10 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
+		AddAllExtensionsToApplicationArchiveProcessor processor = 
+			getProcessorWithoutAuxiliaryArchive();
+		
+		processor.process(javaArchive, testClass);
 
 		//then:
 		Manifest manifest = getManifest((JavaArchive)javaArchive);
@@ -268,8 +285,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			getProcessorWithJarAuxiliaryArchive()
 		throws IllegalAccessException, NoSuchFieldException {
 
-		return getProcessor(
-			new MockServiceLoaderWithJarAuxiliaryArchive());
+		return getProcessor(new DummyServiceLoaderWithJarAuxiliaryArchive());
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor
@@ -278,7 +294,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(
-			new MockServiceLoaderWithOSGIBundleAuxiliaryArchive(imports));
+			new DummyServiceLoaderWithOSGIBundleAuxiliaryArchive(imports));
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor
@@ -286,7 +302,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(
-			new MockServiceLoaderWithoutAuxiliaryArchive());
+			new DummyServiceLoaderWithoutAuxiliaryArchive());
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor getProcessor(
@@ -302,8 +318,8 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 				getDeclaredField("_serviceLoaderInstance");
 		serviceLoaderInstance.setAccessible(true);
 
-		MockInstanceProducerImpl serviceLoaderDummyInstance =
-			new MockInstanceProducerImpl();
+		DummyInstanceProducerImpl serviceLoaderDummyInstance =
+			new DummyInstanceProducerImpl();
 
 		serviceLoaderDummyInstance.set(serviceLoader);
 

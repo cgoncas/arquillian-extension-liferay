@@ -186,9 +186,9 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
 		String extensionsImports =
 			"org.osgi.framework" + "," + "javax.management" + "," +
-				"javax.management.*" + "," + "javax.naming.*" + "," +
-				"org.osgi.service.packageadmin" + "," +
-				"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
+			"javax.management.*" + "," + "javax.naming.*" + "," +
+			"org.osgi.service.packageadmin" + "," +
+			"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
 
 		addAttributeValueToListAttributeInManifest(
 			javaArchive, "Import-Package", extensionsImports, "");

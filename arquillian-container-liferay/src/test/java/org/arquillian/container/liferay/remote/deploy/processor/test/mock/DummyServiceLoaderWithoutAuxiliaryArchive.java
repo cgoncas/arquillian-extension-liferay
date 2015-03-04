@@ -22,7 +22,8 @@ import org.jboss.arquillian.core.spi.ServiceLoader;
 /**
  * @author Cristina González
  */
-public class MockServiceLoaderWithoutAuxiliaryArchive implements ServiceLoader {
+public class DummyServiceLoaderWithoutAuxiliaryArchive
+	implements ServiceLoader {
 
 	@Override
 	public <T> Collection<T> all(Class<T> aClass) {

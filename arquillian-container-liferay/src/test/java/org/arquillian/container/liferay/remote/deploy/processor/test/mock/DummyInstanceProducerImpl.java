@@ -19,7 +19,7 @@ import org.jboss.arquillian.core.api.InstanceProducer;
 /**
  * @author Cristina González
  */
-public class MockInstanceProducerImpl implements InstanceProducer<Object> {
+public class DummyInstanceProducerImpl implements InstanceProducer<Object> {
 
 	@Override
 	public Object get() {

@@ -14,8 +14,13 @@
 
 package org.arquillian.container.liferay.remote.deploy.processor.test.mock;
 
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+
+import org.arquillian.container.liferay.remote.deploy.processor.test.util.ManifestUtil;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.arquillian.core.spi.ServiceLoader;
@@ -26,7 +31,14 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 /**
  * @author Cristina González
  */
-public class MockServiceLoaderWithJarAuxiliaryArchive implements ServiceLoader {
+public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
+	implements ServiceLoader {
+
+	public DummyServiceLoaderWithOSGIBundleAuxiliaryArchive(
+		List<String> imports) {
+
+		_imports = imports;
+	}
 
 	@Override
 	public <T> Collection<T> all(Class<T> aClass) {
@@ -56,18 +68,27 @@ public class MockServiceLoaderWithJarAuxiliaryArchive implements ServiceLoader {
 		return null;
 	}
 
+	private final List<String> _imports;
+
 	private class DummyAuxiliaryArchiveAppender
 		implements AuxiliaryArchiveAppender {
 
 		@Override
 		public Archive<?> createAuxiliaryArchive() {
-			JavaArchive archive = ShrinkWrap.create(
+			JavaArchive javaArchive = ShrinkWrap.create(
 				JavaArchive.class, "dummy-jar.jar");
 
-			archive.addPackage(
-				MockServiceLoaderWithJarAuxiliaryArchive.class.getPackage());
+			javaArchive.addPackage(
+				DummyServiceLoaderWithJarAuxiliaryArchive.class.getPackage());
 
-			return archive;
+			try {
+				ManifestUtil.createManifest(javaArchive, _imports);
+			}
+			catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+			return javaArchive;
 		}
 
 	}
