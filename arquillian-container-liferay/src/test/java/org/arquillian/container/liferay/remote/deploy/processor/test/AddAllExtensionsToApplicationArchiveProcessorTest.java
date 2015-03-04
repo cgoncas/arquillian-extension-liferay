@@ -15,6 +15,9 @@
 package org.arquillian.container.liferay.remote.deploy.processor.test;
 
 import java.io.IOException;
+
+import java.lang.reflect.Field;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
@@ -22,13 +25,15 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.liferay.remote.deploy.OSGiDeploymentPackager;
+import org.arquillian.container.liferay.remote.deploy.processor.AddAllExtensionsToApplicationArchiveProcessor;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockInstanceProducerImpl;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockServiceLoaderWithJarAuxiliaryArchive;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockServiceLoaderWithOSGIBundleAuxiliaryArchive;
+import org.arquillian.container.liferay.remote.deploy.processor.test.mock.MockServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.liferay.remote.deploy.processor.test.util.ManifestUtil;
-import org.arquillian.container.liferay.remote.enricher.LiferayEnricherAuxiliaryAppender;
 
-import org.jboss.arquillian.container.spi.client.deployment.DeploymentDescription;
-import org.jboss.arquillian.container.test.spi.TestDeployment;
-import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.arquillian.core.spi.ServiceLoader;
+import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.Asset;
@@ -40,7 +45,7 @@ import org.junit.Test;
 /**
  * @author Cristina González
  */
-public class OSGiDeploymentPackagerTest {
+public class AddAllExtensionsToApplicationArchiveProcessorTest {
 
 	@Test
 	public void testGenerateDeployment() throws Exception {
@@ -50,19 +55,13 @@ public class OSGiDeploymentPackagerTest {
 
 		ManifestUtil.createManifest(javaArchive);
 
-		DeploymentDescription deploymentDescription = new DeploymentDescription(
-			"test-deployment", javaArchive);
-
-		TestDeployment testDeployment = new TestDeployment(
-			deploymentDescription, javaArchive, new ArrayList<Archive<?>>());
+		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		Archive javaArchiveGenerated =
-			new OSGiDeploymentPackager().generateDeployment(
-				testDeployment, null);
+		getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchiveGenerated);
+		Manifest manifest = getManifest((JavaArchive)javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -77,21 +76,16 @@ public class OSGiDeploymentPackagerTest {
 	}
 
 	@Test
-	public void testGenerateDeploymentFromNonOSGiBundle() {
+	public void testGenerateDeploymentFromNonOSGiBundle() throws Exception {
 		//given:
 		JavaArchive javaArchive = getJavaArchive();
 		javaArchive.addClass(this.getClass());
 
-		DeploymentDescription deploymentDescription = new DeploymentDescription(
-			"test-deployment", javaArchive);
-
-		TestDeployment testDeployment = new TestDeployment(
-			deploymentDescription, javaArchive, new ArrayList<Archive<?>>());
+		TestClass testClass = new TestClass(this.getClass());
 
 		try {
 			//when:
-			new OSGiDeploymentPackager().generateDeployment(
-				testDeployment, null);
+			getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
 
 			Assert.fail(
 				"If a JavaArchive doesn't contain a Manifest, should fail");
@@ -113,27 +107,18 @@ public class OSGiDeploymentPackagerTest {
 
 		ManifestUtil.createManifest(javaArchive);
 
-		DeploymentDescription deploymentDescription = new DeploymentDescription(
-			"test-deployment", javaArchive);
+		TestClass testClass = new TestClass(this.getClass());
 
-		List<String> importsExtensions = new ArrayList<>();
+		List<String> imports = new ArrayList<>();
 
-		importsExtensions.add("import.example.1");
-		importsExtensions.add("import.example.2");
-
-		List<Archive<?>> auxiliaryArchives = getAuxiliaryArchivesWithManifest(
-			importsExtensions);
-
-		TestDeployment testDeployment = new TestDeployment(
-			deploymentDescription, javaArchive, auxiliaryArchives);
+		imports.add("import.example.1");
+		imports.add("import.example.2");
 
 		//when:
-		Archive javaArchiveGenerated =
-			new OSGiDeploymentPackager().generateDeployment(
-				testDeployment, null);
+		getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchiveGenerated);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -142,7 +127,7 @@ public class OSGiDeploymentPackagerTest {
 		Assert.assertNotNull(
 			"Import-Package has not been set", importPackageValue);
 
-		for (String importExtension : importsExtensions) {
+		for (String importExtension : imports) {
 			Assert.assertTrue(
 				"Import-Package should contains " + importExtension,
 				importPackageValue.contains(importExtension));
@@ -160,21 +145,13 @@ public class OSGiDeploymentPackagerTest {
 
 		ManifestUtil.createManifest(javaArchive);
 
-		DeploymentDescription deploymentDescription = new DeploymentDescription(
-			"test-deployment", javaArchive);
-
-		List<Archive<?>> auxiliaryArchives = getAuxiliaryArchives();
-
-		TestDeployment testDeployment = new TestDeployment(
-			deploymentDescription, javaArchive, auxiliaryArchives);
+		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		Archive javaArchiveGenerated =
-			new OSGiDeploymentPackager().generateDeployment(
-				testDeployment, null);
+		getProcessorWithJarAuxiliaryArchive().process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchiveGenerated);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -184,11 +161,9 @@ public class OSGiDeploymentPackagerTest {
 		Assert.assertNotNull(
 			"The Bundle-ClassPath has not been set", bundleClassPathValue);
 
-		for (Archive<?> auxiliaryArchive : auxiliaryArchives) {
-			Assert.assertTrue(
-				"The Bundle-ClassPath should contain the auxiliaryArchive",
-				bundleClassPathValue.contains(auxiliaryArchive.getName()));
-		}
+		Assert.assertTrue(
+			"The Bundle-ClassPath should contain the auxiliaryArchive",
+			bundleClassPathValue.contains("dummy-jar.jar"));
 	}
 
 	@Test
@@ -202,27 +177,19 @@ public class OSGiDeploymentPackagerTest {
 
 		ManifestUtil.createManifest(javaArchive);
 
-		DeploymentDescription deploymentDescription = new DeploymentDescription(
-			"test-deployment", javaArchive);
+		TestClass testClass = new TestClass(this.getClass());
 
-		List<String> importsExtensions = new ArrayList<>();
+		List<String> imports = new ArrayList<>();
 
-		importsExtensions.add("import.example.1");
-		importsExtensions.add("import.example.1");
-
-		List<Archive<?>> auxiliaryArchives = getAuxiliaryArchivesWithManifest(
-			importsExtensions);
-
-		TestDeployment testDeployment = new TestDeployment(
-			deploymentDescription, javaArchive, auxiliaryArchives);
+		imports.add("import.example.1");
+		imports.add("import.example.2");
 
 		//when:
-		Archive javaArchiveGenerated =
-			new OSGiDeploymentPackager().generateDeployment(
-				testDeployment, null);
+		getProcessorWithOSGIJarAuxiliaryArchive(imports).process(
+			javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchiveGenerated);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -236,7 +203,7 @@ public class OSGiDeploymentPackagerTest {
 		int cont = 0;
 
 		for (String importPackage : importsPackageArray) {
-			if (importsExtensions.get(0).equals(importPackage)) {
+			if (imports.get(0).equals(importPackage)) {
 				cont++;
 			}
 		}
@@ -244,7 +211,7 @@ public class OSGiDeploymentPackagerTest {
 		System.out.println("cont " + cont);
 
 		Assert.assertEquals(
-			"The import " + importsExtensions.get(0) +
+			"The import " + imports.get(0) +
 				" should not be repeated", 1, cont);
 	}
 
@@ -257,19 +224,13 @@ public class OSGiDeploymentPackagerTest {
 
 		ManifestUtil.createManifest(javaArchive);
 
-		DeploymentDescription deploymentDescription = new DeploymentDescription(
-			"test-deployment", javaArchive);
-
-		TestDeployment testDeployment = new TestDeployment(
-			deploymentDescription, javaArchive, new ArrayList<Archive<?>>());
+		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		Archive javaArchiveGenerated =
-			new OSGiDeploymentPackager().generateDeployment(
-				testDeployment, null);
+		getProcessorWithoutAuxiliaryArchive().process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchiveGenerated);
+		Manifest manifest = getManifest((JavaArchive)javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -280,38 +241,7 @@ public class OSGiDeploymentPackagerTest {
 			"The Bundle-ClassPath atribute has not been correctly initialized",
 			bundleClassPathValue);
 	}
-
-	private List<Archive<?>> getAuxiliaryArchives() {
-		List<Archive<?>> auxiliaryArchives = new ArrayList<>();
-
-		LiferayEnricherAuxiliaryAppender liferayEnricherAuxiliaryAppender =
-			new LiferayEnricherAuxiliaryAppender();
-
-		auxiliaryArchives.add(
-			liferayEnricherAuxiliaryAppender.createAuxiliaryArchive());
-
-		return auxiliaryArchives;
-	}
-
-	private List<Archive<?>> getAuxiliaryArchivesWithManifest(
-			List<String> imports)
-		throws IOException {
-
-		List<Archive<?>> auxiliaryArchives = new ArrayList<>();
-
-		LiferayEnricherAuxiliaryAppender liferayEnricherAuxiliaryAppender =
-			new LiferayEnricherAuxiliaryAppender();
-
-		Archive<?> auxiliaryArchive =
-			liferayEnricherAuxiliaryAppender.createAuxiliaryArchive();
-
-		ManifestUtil.createManifest((JavaArchive) auxiliaryArchive, imports);
-
-		auxiliaryArchives.add(auxiliaryArchive);
-
-		return auxiliaryArchives;
-	}
-
+	
 	private JavaArchive getJavaArchive() {
 		JavaArchive javaArchive = ShrinkWrap.create(
 			JavaArchive.class, "arquillian-osgi-liferay-test.jar");
@@ -332,6 +262,61 @@ public class OSGiDeploymentPackagerTest {
 			asset);
 
 		return new Manifest(asset.openStream());
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
+			getProcessorWithJarAuxiliaryArchive()
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(
+			new MockServiceLoaderWithJarAuxiliaryArchive());
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
+		getProcessorWithOSGIJarAuxiliaryArchive(
+			List<String> imports)
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(
+			new MockServiceLoaderWithOSGIBundleAuxiliaryArchive(imports));
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
+			getProcessorWithoutAuxiliaryArchive()
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(
+			new MockServiceLoaderWithoutAuxiliaryArchive());
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor getProcessor(
+			ServiceLoader serviceLoader)
+		throws NoSuchFieldException {
+
+		AddAllExtensionsToApplicationArchiveProcessor
+			addAllExtensionsToApplicationArchiveProcessor =
+				new AddAllExtensionsToApplicationArchiveProcessor();
+
+		Field serviceLoaderInstance =
+			AddAllExtensionsToApplicationArchiveProcessor.class.
+				getDeclaredField("_serviceLoaderInstance");
+		serviceLoaderInstance.setAccessible(true);
+
+		MockInstanceProducerImpl serviceLoaderDummyInstance =
+			new MockInstanceProducerImpl();
+
+		serviceLoaderDummyInstance.set(serviceLoader);
+
+		try {
+			serviceLoaderInstance.set(
+				addAllExtensionsToApplicationArchiveProcessor,
+				serviceLoaderDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		return addAllExtensionsToApplicationArchiveProcessor;
 	}
 
 }
