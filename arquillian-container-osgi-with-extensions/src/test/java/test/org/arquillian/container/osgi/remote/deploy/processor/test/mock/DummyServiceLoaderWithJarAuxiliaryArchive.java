@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy.processor.test.mock;
+package org.arquillian.container.osgi.remote.deploy.processor.test.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
