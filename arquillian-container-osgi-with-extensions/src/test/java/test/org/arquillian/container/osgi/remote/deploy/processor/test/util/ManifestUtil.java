@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy.processor.test.util;
+package org.arquillian.container.osgi.remote.deploy.processor.test.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

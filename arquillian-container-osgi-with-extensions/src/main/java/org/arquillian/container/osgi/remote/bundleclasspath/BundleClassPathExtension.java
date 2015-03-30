@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.bundleclasspath;
+package org.arquillian.container.osgi.remote.bundleclasspath;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 

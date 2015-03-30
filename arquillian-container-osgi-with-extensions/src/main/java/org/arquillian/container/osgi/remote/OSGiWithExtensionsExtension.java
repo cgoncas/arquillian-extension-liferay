@@ -14,6 +14,13 @@
 
 package org.arquillian.container.osgi.remote;
 
+import org.arquillian.container.osgi.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
+import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
+
+import org.jboss.arquillian.container.osgi.karaf.remote.KarafRemoteDeployableContainer;
+import org.jboss.arquillian.container.spi.client.container.DeployableContainer;
+import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
+import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
 /**
@@ -23,6 +30,17 @@ public class OSGiWithExtensionsExtension implements LoadableExtension {
 
 	@Override
 	public void register(ExtensionBuilder builder) {
+		builder.override(
+			DeployableContainer.class, KarafRemoteDeployableContainer.class,
+			OSGiWithExtensionsRemoteDeployableContainer.class);
+
+		builder.service(
+			ApplicationArchiveProcessor.class,
+			AddAllExtensionsToApplicationArchiveProcessor.class);
+
+		builder.service(
+			AuxiliaryArchiveAppender.class,
+			BundleClassPathAuxiliaryAppender.class);
 	}
 
 }

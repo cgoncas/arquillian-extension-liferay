@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy.processor.test.mock;
+package org.arquillian.container.osgi.remote.deploy.processor.test.mock;
 
 import java.io.IOException;
 
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.arquillian.container.liferay.remote.deploy.processor.test.util.ManifestUtil;
+import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
 import org.jboss.arquillian.core.spi.ServiceLoader;

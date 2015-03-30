@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy.processor;
+package org.arquillian.container.osgi.remote.processor;
 
 import aQute.bnd.osgi.Jar;
 
@@ -32,7 +32,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.arquillian.container.liferay.remote.activator.ArquillianBundleActivator;
+import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;

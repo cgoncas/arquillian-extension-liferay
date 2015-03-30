@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.liferay.remote.deploy.processor;
+package org.arquillian.container.osgi.remote.processor;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
