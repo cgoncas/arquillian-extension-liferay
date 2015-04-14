@@ -17,7 +17,6 @@ package org.arquillian.container.liferay.remote.deploy.processor.test.util;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import java.lang.StringBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.Attributes;
