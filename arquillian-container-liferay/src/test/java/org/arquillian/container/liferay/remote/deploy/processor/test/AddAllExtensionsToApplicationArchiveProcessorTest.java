@@ -58,9 +58,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor = 
+		AddAllExtensionsToApplicationArchiveProcessor processor =
 			getProcessorWithoutAuxiliaryArchive();
-		
+
 		processor.process(javaArchive, testClass);
 
 		//then:
@@ -88,9 +88,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 
 		try {
 			//when:
-			AddAllExtensionsToApplicationArchiveProcessor processor = 
+			AddAllExtensionsToApplicationArchiveProcessor processor =
 				getProcessorWithoutAuxiliaryArchive();
-			
+
 			processor.process(javaArchive, testClass);
 
 			Assert.fail(
@@ -121,9 +121,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor = 
+		AddAllExtensionsToApplicationArchiveProcessor processor =
 			getProcessorWithOSGIJarAuxiliaryArchive(imports);
-		
+
 		processor.process(javaArchive, testClass);
 
 		//then:
@@ -157,9 +157,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor = 
+		AddAllExtensionsToApplicationArchiveProcessor processor =
 			getProcessorWithJarAuxiliaryArchive();
-		
+
 		processor.process(javaArchive, testClass);
 
 		//then:
@@ -197,9 +197,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		imports.add("import.example.2");
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor = 
+		AddAllExtensionsToApplicationArchiveProcessor processor =
 			getProcessorWithOSGIJarAuxiliaryArchive(imports);
-		
+
 		processor.process(javaArchive, testClass);
 
 		//then:
@@ -241,9 +241,9 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		TestClass testClass = new TestClass(this.getClass());
 
 		//when:
-		AddAllExtensionsToApplicationArchiveProcessor processor = 
+		AddAllExtensionsToApplicationArchiveProcessor processor =
 			getProcessorWithoutAuxiliaryArchive();
-		
+
 		processor.process(javaArchive, testClass);
 
 		//then:
@@ -258,7 +258,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			"The Bundle-ClassPath atribute has not been correctly initialized",
 			bundleClassPathValue);
 	}
-	
+
 	private JavaArchive getJavaArchive() {
 		JavaArchive javaArchive = ShrinkWrap.create(
 			JavaArchive.class, "arquillian-osgi-liferay-test.jar");
@@ -279,30 +279,6 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			asset);
 
 		return new Manifest(asset.openStream());
-	}
-
-	private AddAllExtensionsToApplicationArchiveProcessor
-			getProcessorWithJarAuxiliaryArchive()
-		throws IllegalAccessException, NoSuchFieldException {
-
-		return getProcessor(new DummyServiceLoaderWithJarAuxiliaryArchive());
-	}
-
-	private AddAllExtensionsToApplicationArchiveProcessor
-		getProcessorWithOSGIJarAuxiliaryArchive(
-			List<String> imports)
-		throws IllegalAccessException, NoSuchFieldException {
-
-		return getProcessor(
-			new DummyServiceLoaderWithOSGIBundleAuxiliaryArchive(imports));
-	}
-
-	private AddAllExtensionsToApplicationArchiveProcessor
-			getProcessorWithoutAuxiliaryArchive()
-		throws IllegalAccessException, NoSuchFieldException {
-
-		return getProcessor(
-			new DummyServiceLoaderWithoutAuxiliaryArchive());
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor getProcessor(
@@ -333,6 +309,29 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		}
 
 		return addAllExtensionsToApplicationArchiveProcessor;
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
+			getProcessorWithJarAuxiliaryArchive()
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(new DummyServiceLoaderWithJarAuxiliaryArchive());
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
+		getProcessorWithOSGIJarAuxiliaryArchive(
+			List<String> imports)
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(
+			new DummyServiceLoaderWithOSGIBundleAuxiliaryArchive(imports));
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
+			getProcessorWithoutAuxiliaryArchive()
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(new DummyServiceLoaderWithoutAuxiliaryArchive());
 	}
 
 }
