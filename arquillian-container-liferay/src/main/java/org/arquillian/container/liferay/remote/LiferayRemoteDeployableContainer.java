@@ -14,7 +14,7 @@
 
 package org.arquillian.container.liferay.remote;
 
-import org.arquillian.container.osgi.remote.OSGiWithExtensionsRemoteDeployableContainer;
+import org.arquillian.container.osgi.remote.KarafWithoutBundleRemoteDeployableContainer;
 
 import org.jboss.arquillian.container.spi.client.container.DeploymentException;
 import org.jboss.arquillian.container.spi.client.protocol.metadata.HTTPContext;
@@ -26,7 +26,7 @@ import org.jboss.shrinkwrap.api.Archive;
  */
 public class LiferayRemoteDeployableContainer
 	<T extends LiferayRemoteContainerConfiguration>
-	extends OSGiWithExtensionsRemoteDeployableContainer<T> {
+	extends KarafWithoutBundleRemoteDeployableContainer<T> {
 
 	@Override
 	public ProtocolMetaData deploy(Archive<?> archive)

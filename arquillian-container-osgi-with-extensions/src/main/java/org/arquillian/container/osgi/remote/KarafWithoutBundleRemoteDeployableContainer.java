@@ -26,7 +26,7 @@ import org.jboss.arquillian.container.spi.client.container.LifecycleException;
 /**
  * @author Cristina González
  */
-public class OSGiWithExtensionsRemoteDeployableContainer
+public class KarafWithoutBundleRemoteDeployableContainer
 	<T extends KarafRemoteContainerConfiguration>
 	extends KarafRemoteDeployableContainer<T> {
 
