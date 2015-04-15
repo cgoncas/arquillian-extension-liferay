@@ -26,13 +26,13 @@ import org.jboss.arquillian.core.spi.LoadableExtension;
 /**
  * @author Cristina González
  */
-public class OSGiWithExtensionsExtension implements LoadableExtension {
+public class OSGiAllInBundleExtension implements LoadableExtension {
 
 	@Override
 	public void register(ExtensionBuilder builder) {
 		builder.override(
 			DeployableContainer.class, KarafRemoteDeployableContainer.class,
-			OSGiWithExtensionsRemoteDeployableContainer.class);
+			KarafWithoutBundleRemoteDeployableContainer.class);
 
 		builder.service(
 			ApplicationArchiveProcessor.class,
