@@ -14,8 +14,6 @@
 
 package org.arquillian.container.osgi.remote.processor;
 
-import aQute.bnd.osgi.Jar;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +21,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -200,60 +197,26 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		throws IOException {
 
 		try {
-			List<String> packages = new ArrayList<>();
-
-			for (Archive auxiliaryArchive : auxiliaryArchives) {
-				ZipExporter zipExporter = auxiliaryArchive.as(
-					ZipExporter.class);
-
-				InputStream auxiliaryArchiveInputStream =
-					zipExporter.exportAsInputStream();
-
-				Jar jar = new Jar(
-					auxiliaryArchive.getName(), auxiliaryArchiveInputStream);
-
-				packages.addAll(jar.getPackages());
-			}
+			ImportPackageManager importPackageManager =
+				new ImportPackageManager();
 
 			Manifest manifest = getManifest(javaArchive);
 
 			Attributes mainAttributes = manifest.getMainAttributes();
 
-			String importString = mainAttributes.getValue("Import-Package");
+			String importValues = mainAttributes.getValue("Import-Package");
 
 			mainAttributes.remove(new Attributes.Name("Import-Package"));
 
 			replaceManifest(javaArchive, manifest);
 
-			String[] imports = importString.split(",");
+			List<String> importsNotIncludedInClassPath =
+				importPackageManager.getImportsNotIncludedInClassPath(
+					importValues, auxiliaryArchives);
 
-			Map<String, Boolean> importsMap = new HashMap<>();
-
-			for (String importValue : imports) {
-				String[] importValueSplited = importValue.split(";");
-
-				boolean importValueIsOptional =
-					importValueSplited.length > 1 &&
-						importValueSplited[1].equals(";resolution=optional");
-
-				importsMap.put(importValueSplited[0], false);
-
-				boolean importContainedInJar = packages.contains(importValue);
-
-				if (!importContainedInJar && importValueIsOptional) {
-					importsMap.put(importValueSplited[0], true);
-				}
-			}
-
-			for (String importValue : importsMap.keySet()) {
-				if (importsMap.get(importValue)) {
-					importValue += ";resolution=optional";
-				}
-
-				if (!packages.contains(importValue)) {
-					addAttributeValueToListAttributeInManifest(
-						javaArchive, "Import-Package", importValue, "");
-				}
+			for (String importValue : importsNotIncludedInClassPath) {
+				addAttributeValueToListAttributeInManifest(
+					javaArchive, "Import-Package", importValue, "");
 			}
 		}
 		catch (IOException e) {
