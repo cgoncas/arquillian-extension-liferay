@@ -22,9 +22,14 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
@@ -41,7 +46,7 @@ public class ImportPackageManager {
 		List<String> auxiliaryArchivesPackages = getAuxiliaryArchivesPackages(
 			auxiliaryArchives);
 
-		Map<String, List<String>> importsWithDirectivesMap =
+		Map<String, Set<String>> importsWithDirectivesMap =
 			toImportsWithDirectivesMap(importsInManifest);
 
 		List<String> resultImports = new ArrayList<>();
@@ -86,54 +91,36 @@ public class ImportPackageManager {
 		return packages;
 	}
 
-	private Map<String, List<String>> toImportsWithDirectivesMap(
+	private Map<String, Set<String>> toImportsWithDirectivesMap(
 		String importsInManifest) {
 
-		List<String> importsWithDirectives = Arrays.asList(
+		List<String> packageNamesWithDirectives = Arrays.asList(
 			importsInManifest.split(","));
 
-		Map<String, List<String>> importsWithDirectivesMap = new HashMap<>();
+		Map<String, Set<String>> packagesNameToDirectives = new HashMap<>();
 
-		for (String importWithDirectives : importsWithDirectives) {
-			List<String> importWithDirectivesList = Arrays.asList(
-				importWithDirectives.split(";"));
+		for (String packageNameWithDirectives : packageNamesWithDirectives) {
 
-			List<String> currentDirectives = importsWithDirectivesMap.get(
-				importWithDirectivesList.get(0));
+			LinkedList<String> packageNameAndDirectives = new LinkedList<>();
+
+			Collections.addAll(
+				packageNameAndDirectives, packageNameWithDirectives.split(";"));
+
+			String packageName = packageNameAndDirectives.pop();
+
+			Set<String> currentDirectives = packagesNameToDirectives.get(
+				packageName);
 
 			if (currentDirectives == null) {
-				currentDirectives = new ArrayList<>();
+				currentDirectives = new HashSet<>();
 			}
 
-			if (importWithDirectivesList.size() == 1) {
-				importsWithDirectivesMap.put(
-					importWithDirectivesList.get(0), currentDirectives);
+			currentDirectives.addAll(packageNameAndDirectives);
 
-				continue;
-			}
-
-			currentDirectives.addAll(
-				importWithDirectivesList.subList(
-					1, importWithDirectivesList.size()));
-
-			importsWithDirectivesMap.put(
-				importWithDirectivesList.get(0), currentDirectives);
+			packagesNameToDirectives.put(packageName, currentDirectives);
 		}
 
-		for (String importValue : importsWithDirectivesMap.keySet()) {
-			List<String> directives = importsWithDirectivesMap.get(importValue);
-			List<String> finalDirectives = new ArrayList<>();
-
-			for (String directive : directives) {
-				if (!finalDirectives.contains(directive)) {
-					finalDirectives.add(directive);
-				}
-			}
-
-			importsWithDirectivesMap.put(importValue, finalDirectives);
-		}
-
-		return importsWithDirectivesMap;
+		return packagesNameToDirectives;
 	}
 
 }
