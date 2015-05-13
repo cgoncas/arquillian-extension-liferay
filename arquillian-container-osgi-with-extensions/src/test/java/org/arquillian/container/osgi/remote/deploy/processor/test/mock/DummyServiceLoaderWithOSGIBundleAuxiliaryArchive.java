@@ -23,7 +23,6 @@ import java.util.List;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
 
 import org.jboss.arquillian.container.test.spi.client.deployment.AuxiliaryArchiveAppender;
-import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -32,7 +31,7 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
  * @author Cristina González
  */
 public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
-	implements ServiceLoader {
+	extends DummyServiceLoaderWithoutAuxiliaryArchive {
 
 	public DummyServiceLoaderWithOSGIBundleAuxiliaryArchive(
 		List<String> imports) {
@@ -42,6 +41,12 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 
 	@Override
 	public <T> Collection<T> all(Class<T> aClass) {
+		Collection<T> all = super.all(aClass);
+
+		if ((all != null) && !all.isEmpty()) {
+			return all;
+		}
+
 		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			ArrayList<DummyAuxiliaryArchiveAppender> dummyAuxiliaryArchives =
 				new ArrayList<>();
@@ -56,6 +61,12 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass) {
+		T onlyOne = super.onlyOne(aClass);
+
+		if (onlyOne != null) {
+			return onlyOne;
+		}
+
 		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
@@ -65,6 +76,12 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass, Class < ?extends T > aClass1) {
+		T onlyOne = super.onlyOne(aClass, aClass1);
+
+		if (onlyOne != null) {
+			return onlyOne;
+		}
+
 		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
