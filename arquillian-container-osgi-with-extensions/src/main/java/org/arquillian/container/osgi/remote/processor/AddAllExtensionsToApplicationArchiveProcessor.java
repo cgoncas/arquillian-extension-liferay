@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -108,7 +109,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 	private void addAttributeValueToListAttributeInManifest(
 			JavaArchive javaArchive, String attributeName,
-			String attributeValue, String startValue)
+			String ... attributeValue)
 		throws IOException {
 
 		Manifest manifest = getManifest(javaArchive);
@@ -117,32 +118,27 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		String attributeValues = mainAttributes.getValue(attributeName);
 
-		if ((attributeValues == null) || attributeValues.isEmpty()) {
-			if ((startValue != null) && !startValue.isEmpty()) {
-				startValue = startValue + ",";
-			}
-
-			attributeValues = startValue + attributeValue;
+		if (attributeValues == null) {
+			attributeValues = "";
 		}
-		else {
-			Set<String> attributeValueSet = new HashSet<>(
-				Arrays.asList(attributeValues.split(",")));
 
-			attributeValueSet.addAll(Arrays.asList(attributeValue.split(",")));
+		Set<String> attributeValueSet = new HashSet<>(
+			Arrays.asList(attributeValues.split(",")));
 
-			StringBuilder sb = new StringBuilder();
+		Collections.addAll(attributeValueSet, attributeValue);
 
-			for (String value : attributeValueSet) {
-				sb.append(value);
-				sb.append(",");
-			}
+		StringBuilder sb = new StringBuilder();
 
-			if (!attributeValueSet.isEmpty()) {
-				sb.setLength(sb.length() - 1);
-			}
-
-			attributeValues = sb.toString();
+		for (String value : attributeValueSet) {
+			sb.append(value);
+			sb.append(",");
 		}
+
+		if (!attributeValueSet.isEmpty()) {
+			sb.setLength(sb.length() - 1);
+		}
+
+		attributeValues = sb.toString();
 
 		mainAttributes.putValue(attributeName, attributeValues);
 
@@ -182,14 +178,13 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 	}
 
 	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
-		String extensionsImports =
-			"org.osgi.framework" + "," + "javax.management" + "," +
-			"javax.management.*" + "," + "javax.naming.*" + "," +
-			"org.osgi.service.packageadmin" + "," +
-			"org.osgi.service.startlevel" + "," + "org.osgi.util.tracker";
+		String[] extensionsImports = {
+			"org.osgi.framework" , "javax.management" , "javax.management.*" ,
+			"javax.naming.*" , "org.osgi.service.packageadmin" ,
+			"org.osgi.service.startlevel" , "org.osgi.util.tracker"};
 
 		addAttributeValueToListAttributeInManifest(
-			javaArchive, "Import-Package", extensionsImports, "");
+			javaArchive, "Import-Package", extensionsImports);
 	}
 
 	private void deleteImportsIncludedInClassPath(
@@ -216,7 +211,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			for (String importValue : importsNotIncludedInClassPath) {
 				addAttributeValueToListAttributeInManifest(
-					javaArchive, "Import-Package", importValue, "");
+					javaArchive, "Import-Package", importValue);
 			}
 		}
 		catch (IOException e) {
@@ -276,7 +271,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			javaArchive.addAsResource(byteArrayAsset, path);
 
 			addAttributeValueToListAttributeInManifest(
-				javaArchive, "Bundle-ClassPath", path, ".");
+				javaArchive, "Bundle-ClassPath", ".", path);
 
 			try {
 				validateBundleArchive(auxiliaryArchive);
@@ -294,7 +289,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 					for (String importValue : importValues) {
 						addAttributeValueToListAttributeInManifest(
-							javaArchive, "Import-Package", importValue, "");
+							javaArchive, "Import-Package", importValue);
 					}
 				}
 
