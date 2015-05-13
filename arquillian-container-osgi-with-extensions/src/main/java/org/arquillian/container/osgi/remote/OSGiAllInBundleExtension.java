@@ -46,6 +46,8 @@ public class OSGiAllInBundleExtension implements LoadableExtension {
 
 		builder.service(
 			ImportPackageManager.class, ImportPackageManagerImpl.class);
+
+		builder.observer(OSGiAllInBundleExtension.class);
 	}
 
 }
