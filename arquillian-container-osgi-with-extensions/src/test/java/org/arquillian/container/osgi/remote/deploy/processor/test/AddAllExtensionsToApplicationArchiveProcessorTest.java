@@ -32,6 +32,7 @@ import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServ
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
 import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
+import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
 
 import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.test.spi.TestClass;
@@ -443,6 +444,25 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			serviceLoaderInstance.set(
 				addAllExtensionsToApplicationArchiveProcessor,
 				serviceLoaderDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		Field importPackageManagerInstance =
+			AddAllExtensionsToApplicationArchiveProcessor.class.
+				getDeclaredField("_importPackageManagerInstance");
+		importPackageManagerInstance.setAccessible(true);
+
+		DummyInstanceProducerImpl importPackageManagerDummyInstance =
+			new DummyInstanceProducerImpl();
+
+		importPackageManagerDummyInstance.set(new ImportPackageManagerImpl());
+
+		try {
+			importPackageManagerInstance.set(
+				addAllExtensionsToApplicationArchiveProcessor,
+				importPackageManagerDummyInstance);
 		}
 		catch (IllegalAccessException e) {
 			e.printStackTrace();

@@ -191,10 +191,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		throws IOException {
 
 		try {
-			ServiceLoader serviceLoader = _serviceLoaderInstance.get();
-
 			ImportPackageManager importPackageManager =
-				serviceLoader.onlyOne(ImportPackageManager.class);
+				_importPackageManagerInstance.get();
 
 			Manifest manifest = getManifest(javaArchive);
 
@@ -375,6 +373,9 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 	private static final Logger _logger = LoggerFactory.getLogger(
 		ApplicationArchiveProcessor.class);
+
+	@Inject
+	private Instance<ImportPackageManager> _importPackageManagerInstance;
 
 	@Inject
 	private Instance<ServiceLoader> _serviceLoaderInstance;
