@@ -65,7 +65,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		processor.process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchive);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -377,7 +377,7 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		processor.process(javaArchive, testClass);
 
 		//then:
-		Manifest manifest = getManifest((JavaArchive)javaArchive);
+		Manifest manifest = getManifest(javaArchive);
 
 		Attributes mainAttributes = manifest.getMainAttributes();
 
@@ -400,12 +400,13 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Node node = javaArchive.get(JarFile.MANIFEST_NAME);
 
 		Assert.assertNotNull(
-			"The deployment java archive doen't contain a manifest file", node);
+			"The deployment java archive doesn't contain a manifest file",
+			node);
 
 		Asset asset = node.getAsset();
 
 		Assert.assertNotNull(
-			"The deployment java archive doen't contain a manifest file",
+			"The deployment java archive doesn't contain a manifest file",
 			asset);
 
 		return new Manifest(asset.openStream());
