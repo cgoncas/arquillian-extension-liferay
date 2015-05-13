@@ -305,6 +305,15 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		Assert.assertNotNull(
 			"The Bundle-ClassPath has not been set", bundleClassPathValue);
 
+		List<String> bundleClassPaths = Arrays.asList(
+			bundleClassPathValue.split(","));
+
+		Assert.assertEquals(2, bundleClassPaths.size());
+
+		Assert.assertTrue(
+			"Bundle-ClassPath should contain . ",
+			bundleClassPathValue.contains("."));
+
 		Assert.assertTrue(
 			"The Bundle-ClassPath should contain the auxiliaryArchive",
 			bundleClassPathValue.contains("dummy-jar.jar"));
