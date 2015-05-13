@@ -42,17 +42,21 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 
 	@Override
 	public <T> Collection<T> all(Class<T> aClass) {
-		ArrayList<DummyAuxiliaryArchiveAppender> dummyAuxiliaryArchives =
-			new ArrayList<>();
+		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
+			ArrayList<DummyAuxiliaryArchiveAppender> dummyAuxiliaryArchives =
+				new ArrayList<>();
 
-		dummyAuxiliaryArchives.add(new DummyAuxiliaryArchiveAppender());
+			dummyAuxiliaryArchives.add(new DummyAuxiliaryArchiveAppender());
 
-		return (Collection<T>)dummyAuxiliaryArchives;
+			return (Collection<T>)dummyAuxiliaryArchives;
+		}
+
+		return new ArrayList<>();
 	}
 
 	@Override
 	public <T> T onlyOne(Class<T> aClass) {
-		if (aClass.getClass().isInstance(DummyAuxiliaryArchiveAppender.class)) {
+		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
@@ -60,8 +64,8 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 	}
 
 	@Override
-	public <T> T onlyOne(Class<T> aClass, Class<? extends T> aClass1) {
-		if (aClass.getClass().isInstance(DummyAuxiliaryArchiveAppender.class)) {
+	public <T> T onlyOne(Class<T> aClass, Class < ?extends T > aClass1) {
+		if (aClass.isAssignableFrom(DummyAuxiliaryArchiveAppender.class)) {
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
