@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
@@ -101,6 +102,42 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			Assert.assertEquals(
 				iae.getMessage(), "Not a valid OSGi bundle: " + javaArchive);
 		}
+	}
+
+	@Test
+	public void testGenerateDeploymentFromNonOSGiBundleDefaultImports()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithoutAuxiliaryArchive();
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Manifest manifest = getManifest(javaArchive);
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String importPackageValue = mainAttributes.getValue("Import-Package");
+
+		Assert.assertNotNull(
+			"Import-Package has not been set", importPackageValue);
+
+		List<String> importsPackageArray = Arrays.asList(
+			importPackageValue.split(","));
+
+		importsPackageArray.contains("org.osgi.util.tracker");
+		importsPackageArray.contains("javax.management");
+		importsPackageArray.contains("org.osgi.service.startlevel");
 	}
 
 	@Test
