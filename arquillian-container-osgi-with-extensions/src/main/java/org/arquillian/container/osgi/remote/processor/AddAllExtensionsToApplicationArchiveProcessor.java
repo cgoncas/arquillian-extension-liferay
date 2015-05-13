@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -118,14 +117,13 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		String attributeValues = mainAttributes.getValue(attributeName);
 
-		if (attributeValues == null) {
-			attributeValues = "";
+		Set<String> attributeValueSet = new HashSet<>();
+
+		if (attributeValues != null) {
+			attributeValueSet.addAll(Arrays.asList(attributeValues.split(",")));
 		}
 
-		Set<String> attributeValueSet = new HashSet<>(
-			Arrays.asList(attributeValues.split(",")));
-
-		Collections.addAll(attributeValueSet, attributeValue);
+		attributeValueSet.addAll(Arrays.asList(attributeValue));
 
 		StringBuilder sb = new StringBuilder();
 
