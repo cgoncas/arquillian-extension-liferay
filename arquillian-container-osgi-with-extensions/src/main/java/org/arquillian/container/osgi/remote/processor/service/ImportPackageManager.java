@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.osgi.remote.processor;
+package org.arquillian.container.osgi.remote.processor.service;
 
 import aQute.bnd.osgi.Jar;
 
