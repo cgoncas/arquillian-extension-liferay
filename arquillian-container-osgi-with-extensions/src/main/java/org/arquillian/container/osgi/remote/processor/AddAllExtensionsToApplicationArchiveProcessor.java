@@ -31,7 +31,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
 
 import org.jboss.arquillian.container.test.spi.RemoteLoadableExtension;
 import org.jboss.arquillian.container.test.spi.client.deployment.ApplicationArchiveProcessor;
@@ -191,8 +191,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		throws IOException {
 
 		try {
-			ImportPackageManager importPackageManager =
-				new ImportPackageManager();
+			ImportPackageManagerImpl importPackageManager =
+				new ImportPackageManagerImpl();
 
 			Manifest manifest = getManifest(javaArchive);
 

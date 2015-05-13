@@ -36,7 +36,7 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 /**
  * @author Cristina González
  */
-public class ImportPackageManager {
+public class ImportPackageManagerImpl {
 
 	public List<String> getImportsNotIncludedInClassPath(
 			String importsInManifest, Collection<Archive<?>> auxiliaryArchives)
