@@ -28,30 +28,7 @@ import java.util.List;
  */
 public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 
-	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
-			List<String> _bundleActivators)
-		throws IOException {
-
-		String bundleActivatorsString = "";
-
-		for (String bundleActivator : _bundleActivators) {
-			bundleActivatorsString += bundleActivator + "\n";
-		}
-
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-		outputStream.write(bundleActivatorsString.getBytes());
-
-		return outputStream;
-	}
-
 	public List<String> getBundleActivators(InputStream is) throws IOException {
-		return _getBundleActivatorFromInputStream(is);
-	}
-
-	private List<String> _getBundleActivatorFromInputStream(InputStream is)
-		throws IOException {
-
 		List<String> bundleActivators = new ArrayList<>();
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -65,4 +42,20 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		return bundleActivators;
 	}
 
+	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
+		List<String> bundleActivators)
+		throws IOException {
+
+		String bundleActivatorsString = "";
+
+		for (String bundleActivator : bundleActivators) {
+			bundleActivatorsString += bundleActivator + "\n";
+		}
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+		outputStream.write(bundleActivatorsString.getBytes());
+
+		return outputStream;
+	}
 }
