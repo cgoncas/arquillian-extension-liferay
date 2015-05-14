@@ -23,6 +23,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+
 /**
  * @author Cristina González
  */
@@ -62,5 +65,20 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		outputStream.write(sb.toString().getBytes());
 
 		return outputStream;
+	}
+
+	public void replaceBundleActivatorsFile(
+			Archive archive, String fileName, List<String> bundleActivators)
+		throws IOException {
+
+		ByteArrayOutputStream bundleActivatorAsOutputStream =
+			getBundleActivatorAsOutputStream(bundleActivators);
+
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
+			bundleActivatorAsOutputStream.toByteArray());
+
+		archive.delete(fileName);
+
+		archive.add(byteArrayAsset, fileName);
 	}
 }

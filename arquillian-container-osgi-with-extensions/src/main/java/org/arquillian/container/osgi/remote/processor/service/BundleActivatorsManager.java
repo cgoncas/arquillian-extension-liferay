@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import org.jboss.shrinkwrap.api.Archive;
 
 /**
  * @author Cristina González
@@ -28,4 +29,9 @@ public interface BundleActivatorsManager {
 
 	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
 		List<String> bundleActivators) throws IOException ;
+
+	public void replaceBundleActivatorsFile(
+			Archive archive, String fileName, List<String> bundleActivators)
+		throws IOException;
+
 }

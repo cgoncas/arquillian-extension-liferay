@@ -14,7 +14,6 @@
 
 package org.arquillian.container.osgi.remote.processor;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -128,16 +127,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		bundleActivators.add(bundleActivatorValue);
 
-		ByteArrayOutputStream bundleActivatorAsOutputStream =
-			bundleActivatorsManager.getBundleActivatorAsOutputStream(
-				bundleActivators);
-
-		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
-			bundleActivatorAsOutputStream.toByteArray());
-
-		javaArchive.delete(_ACTIVATORS_FILE);
-
-		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
+		bundleActivatorsManager.replaceBundleActivatorsFile(
+			javaArchive, _ACTIVATORS_FILE, bundleActivators);
 	}
 
 	private void addOSGiImports(JavaArchive javaArchive) throws IOException {
