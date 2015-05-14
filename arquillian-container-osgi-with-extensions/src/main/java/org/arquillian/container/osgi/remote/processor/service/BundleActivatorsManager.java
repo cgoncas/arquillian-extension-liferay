@@ -14,14 +14,11 @@
 
 package org.arquillian.container.osgi.remote.processor.service;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
+
 import java.util.List;
+
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.Node;
-import org.jboss.shrinkwrap.api.asset.Asset;
 
 /**
  * @author Cristina González
@@ -30,11 +27,6 @@ public interface BundleActivatorsManager {
 
 	public List<String> getBundleActivators(Archive archive, String fileName)
 		throws IOException;
-
-	public List<String> getBundleActivators(InputStream is) throws IOException;
-
-	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
-		List<String> bundleActivators) throws IOException ;
 
 	public void replaceBundleActivatorsFile(
 			Archive archive, String fileName, List<String> bundleActivators)

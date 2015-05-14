@@ -27,7 +27,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.Node;
 import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
  * @author Cristina González
@@ -44,28 +43,29 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		if (node != null) {
 			Asset asset = node.getAsset();
 
-			bundleActivators.addAll(getBundleActivators(asset.openStream()));
+			bundleActivators.addAll(_getBundleActivators(asset.openStream()));
 		}
 
 		return bundleActivators;
 	}
 
-	public List<String> getBundleActivators(InputStream is) throws IOException {
-		List<String> bundleActivators = new ArrayList<>();
+	public void replaceBundleActivatorsFile(
+			Archive archive, String fileName, List<String> bundleActivators)
+		throws IOException {
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		String line;
-		while ((line = reader.readLine()) != null) {
-			bundleActivators.add(line);
-		}
+		ByteArrayOutputStream bundleActivatorAsOutputStream =
+			_getBundleActivatorAsOutputStream(bundleActivators);
 
-		reader.close();
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
+			bundleActivatorAsOutputStream.toByteArray());
 
-		return bundleActivators;
+		archive.delete(fileName);
+
+		archive.add(byteArrayAsset, fileName);
 	}
 
-	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
-		List<String> bundleActivators)
+	private ByteArrayOutputStream _getBundleActivatorAsOutputStream(
+			List<String> bundleActivators)
 		throws IOException {
 
 		StringBuilder sb = new StringBuilder();
@@ -86,18 +86,20 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		return outputStream;
 	}
 
-	public void replaceBundleActivatorsFile(
-			Archive archive, String fileName, List<String> bundleActivators)
+	private List<String> _getBundleActivators(InputStream is)
 		throws IOException {
 
-		ByteArrayOutputStream bundleActivatorAsOutputStream =
-			getBundleActivatorAsOutputStream(bundleActivators);
+		List<String> bundleActivators = new ArrayList<>();
 
-		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
-			bundleActivatorAsOutputStream.toByteArray());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		String line;
+		while ((line = reader.readLine()) != null) {
+			bundleActivators.add(line);
+		}
 
-		archive.delete(fileName);
+		reader.close();
 
-		archive.add(byteArrayAsset, fileName);
+		return bundleActivators;
 	}
+
 }

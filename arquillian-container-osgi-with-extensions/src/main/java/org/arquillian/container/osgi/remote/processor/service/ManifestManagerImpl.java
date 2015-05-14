@@ -44,7 +44,7 @@ public class ManifestManagerImpl implements ManifestManager {
 	}
 
 	public Manifest putAttributeValue(
-		Manifest manifest, String attributeName, String... attributeValue)
+			Manifest manifest, String attributeName, String... attributeValue)
 		throws IOException {
 
 		Attributes mainAttributes = manifest.getMainAttributes();
