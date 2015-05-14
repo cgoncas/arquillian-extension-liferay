@@ -12,7 +12,7 @@
  * details.
  */
 
-package org.arquillian.container.osgi.remote.processor;
+package org.arquillian.container.osgi.remote.processor.service;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
