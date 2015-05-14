@@ -78,15 +78,15 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
 
-			Manifest manifest = getManifest(javaArchive);
+			ManifestManager manifestManager = _manifestManagerInstance.get();
+
+			Manifest manifest = manifestManager.getManifest(javaArchive);
 
 			Attributes mainAttributes = manifest.getMainAttributes();
 
 			mainAttributes.put(
 				new Attributes.Name("Bundle-Activator"),
 				ArquillianBundleActivator.class.getCanonicalName());
-
-			ManifestManager manifestManager = _manifestManagerInstance.get();
 
 			manifestManager.replaceManifest(javaArchive, manifest);
 
@@ -149,7 +149,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		Manifest manifest =
 			manifestManager.putAttibuteValue(
-				getManifest(javaArchive), "Import-Package", extensionsImports);
+				manifestManager.getManifest(javaArchive), "Import-Package",
+				extensionsImports);
 
 		manifestManager.replaceManifest(javaArchive, manifest);
 	}
@@ -162,9 +163,9 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			ImportPackageManager importPackageManager =
 				_importPackageManagerInstance.get();
 
-			Manifest manifest = getManifest(javaArchive);
-
 			ManifestManager manifestManager = _manifestManagerInstance.get();
+
+			Manifest manifest = manifestManager.getManifest(javaArchive);
 
 			manifest =
 				importPackageManager.cleanRepeatedImports(
@@ -175,14 +176,6 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private Manifest getManifest(JavaArchive javaArchive) throws IOException {
-		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
-
-		Asset manifestAsset = manifestNode.getAsset();
-
-		return new Manifest(manifestAsset.openStream());
 	}
 
 	private void handleAuxiliaryArchives(
@@ -231,14 +224,14 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			ManifestManager manifestManager = _manifestManagerInstance.get();
 
 			Manifest manifest = manifestManager.putAttibuteValue(
-				getManifest(javaArchive), "Bundle-ClassPath", ".", path);
+				manifestManager.getManifest(javaArchive), "Bundle-ClassPath", ".", path);
 
 			manifestManager.replaceManifest(javaArchive, manifest);
 
 			try {
 				validateBundleArchive(auxiliaryArchive);
 
-				Manifest auxiliaryArchiveManifest = getManifest(
+				Manifest auxiliaryArchiveManifest =manifestManager.getManifest(
 					(JavaArchive) auxiliaryArchive);
 
 				Attributes mainAttributes =

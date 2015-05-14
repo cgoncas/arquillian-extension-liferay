@@ -25,12 +25,23 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
  * @author Cristina González
  */
 public class ManifestManagerImpl implements ManifestManager {
+
+	public Manifest getManifest(JavaArchive javaArchive) throws IOException {
+		Node manifestNode = javaArchive.get(JarFile.MANIFEST_NAME);
+
+		Asset manifestAsset = manifestNode.getAsset();
+
+		return new Manifest(manifestAsset.openStream());
+	}
 
 	public Manifest putAttibuteValue(
 			Manifest manifest, String attributeName, String... attributeValue)

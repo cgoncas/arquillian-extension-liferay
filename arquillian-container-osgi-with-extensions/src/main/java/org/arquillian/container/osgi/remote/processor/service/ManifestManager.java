@@ -19,11 +19,14 @@ import java.io.IOException;
 import java.util.jar.Manifest;
 
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
  * @author Cristina González
  */
 public interface ManifestManager {
+
+	public Manifest getManifest(JavaArchive javaArchive) throws IOException;
 
 	public Manifest putAttibuteValue(
 			Manifest manifest, String attributeName, String... attributeValue)
