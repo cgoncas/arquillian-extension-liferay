@@ -116,20 +116,20 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		BundleActivatorsManager bundleActivatorsManager =
 			new BundleActivatorsManager();
 
+		List<String> bundleActivators = new ArrayList<>();
+
 		if (node != null) {
 			Asset asset = node.getAsset();
 
-			bundleActivatorsManager = new BundleActivatorsManager(
+			bundleActivators = bundleActivatorsManager.getBundleActivators(
 				asset.openStream());
 		}
-
-		List<String> bundleActivators =
-			bundleActivatorsManager.getBundleActivators();
 
 		bundleActivators.add(bundleActivatorValue);
 
 		ByteArrayOutputStream bundleActivatorAsOutputStream =
-			bundleActivatorsManager.getBundleActivatorAsOutputStream();
+			bundleActivatorsManager.getBundleActivatorAsOutputStream(
+				bundleActivators);
 
 		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(
 			bundleActivatorAsOutputStream.toByteArray());

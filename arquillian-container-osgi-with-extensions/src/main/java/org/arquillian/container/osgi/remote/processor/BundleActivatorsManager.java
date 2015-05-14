@@ -28,15 +28,8 @@ import java.util.List;
  */
 public class BundleActivatorsManager {
 
-	public BundleActivatorsManager() throws IOException {
-		_bundleActivators = new ArrayList<>();
-	}
-
-	public BundleActivatorsManager(InputStream is) throws IOException {
-		_bundleActivators = _getBundleActivatorFromInputStream(is);
-	}
-
-	public ByteArrayOutputStream getBundleActivatorAsOutputStream()
+	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
+			List<String> _bundleActivators)
 		throws IOException {
 
 		String bundleActivatorsString = "";
@@ -52,24 +45,24 @@ public class BundleActivatorsManager {
 		return outputStream;
 	}
 
-	public List<String> getBundleActivators() {
-		return _bundleActivators;
+	public List<String> getBundleActivators(InputStream is) throws IOException {
+		return _getBundleActivatorFromInputStream(is);
 	}
 
 	private List<String> _getBundleActivatorFromInputStream(InputStream is)
 		throws IOException {
 
+		List<String> bundleActivators = new ArrayList<>();
+
 		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 		String line;
 		while ((line = reader.readLine()) != null) {
-			_bundleActivators.add(line);
+			bundleActivators.add(line);
 		}
 
 		reader.close();
 
-		return _bundleActivators;
+		return bundleActivators;
 	}
-
-	private final List<String> _bundleActivators;
 
 }
