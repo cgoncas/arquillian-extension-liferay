@@ -46,15 +46,20 @@ public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 		List<String> bundleActivators)
 		throws IOException {
 
-		String bundleActivatorsString = "";
+		StringBuilder sb = new StringBuilder();
 
 		for (String bundleActivator : bundleActivators) {
-			bundleActivatorsString += bundleActivator + "\n";
+			sb.append(bundleActivator);
+			sb.append("\n");
+		}
+
+		if (!bundleActivators.isEmpty()) {
+			sb.setLength(sb.length() - 1);
 		}
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-		outputStream.write(bundleActivatorsString.getBytes());
+		outputStream.write(sb.toString().getBytes());
 
 		return outputStream;
 	}
