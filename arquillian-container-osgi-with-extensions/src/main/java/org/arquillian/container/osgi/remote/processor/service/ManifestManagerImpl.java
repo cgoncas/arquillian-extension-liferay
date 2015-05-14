@@ -14,13 +14,18 @@
 
 package org.arquillian.container.osgi.remote.processor.service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.Attributes;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+
+import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 
 /**
  * @author Cristina González
@@ -59,6 +64,20 @@ public class ManifestManagerImpl implements ManifestManager {
 		mainAttributes.putValue(attributeName, attributeValues);
 
 		return manifest;
+	}
+
+	public void replaceManifest(Archive archive, Manifest manifest )
+		throws IOException {
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		manifest.write(baos);
+
+		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(baos.toByteArray());
+
+		archive.delete(JarFile.MANIFEST_NAME);
+
+		archive.add(byteArrayAsset, JarFile.MANIFEST_NAME);
 	}
 
 }

@@ -86,7 +86,9 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 				new Attributes.Name("Bundle-Activator"),
 				ArquillianBundleActivator.class.getCanonicalName());
 
-			replaceManifest(javaArchive, manifest);
+			ManifestManager manifestManager = _manifestManagerInstance.get();
+
+			manifestManager.replaceManifest(javaArchive, manifest);
 
 			javaArchive.addClass(ArquillianBundleActivator.class);
 		}
@@ -149,7 +151,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			manifestManager.putAttibuteValue(
 				getManifest(javaArchive), "Import-Package", extensionsImports);
 
-		replaceManifest(javaArchive, manifest);
+		manifestManager.replaceManifest(javaArchive, manifest);
 	}
 
 	private void deleteImportsIncludedInClassPath(
@@ -162,11 +164,13 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			Manifest manifest = getManifest(javaArchive);
 
+			ManifestManager manifestManager = _manifestManagerInstance.get();
+
 			manifest =
 				importPackageManager.cleanRepeatedImports(
 					manifest, auxiliaryArchives);
 
-			replaceManifest(javaArchive, manifest);
+			manifestManager.replaceManifest(javaArchive, manifest);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
@@ -229,7 +233,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			Manifest manifest = manifestManager.putAttibuteValue(
 				getManifest(javaArchive), "Bundle-ClassPath", ".", path);
 
-			replaceManifest(javaArchive, manifest);
+			manifestManager.replaceManifest(javaArchive, manifest);
 
 			try {
 				validateBundleArchive(auxiliaryArchive);
@@ -249,7 +253,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 						manifestManager.putAttibuteValue(
 							manifest, "Import-Package", importValues);
 
-					replaceManifest(javaArchive, manifest);
+					manifestManager.replaceManifest(javaArchive, manifest);
 				}
 
 				String bundleActivatorValue = mainAttributes.getValue(
@@ -291,20 +295,6 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		}
 
 		return archives;
-	}
-
-	private void replaceManifest(Archive archive, Manifest manifest )
-		throws IOException {
-
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-		manifest.write(baos);
-
-		ByteArrayAsset byteArrayAsset = new ByteArrayAsset(baos.toByteArray());
-
-		archive.delete(JarFile.MANIFEST_NAME);
-
-		archive.add(byteArrayAsset, JarFile.MANIFEST_NAME);
 	}
 
 	private void validateBundleArchive(Archive<?> archive) throws Exception {
