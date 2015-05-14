@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Cristina González
  */
-public class BundleActivatorsManagerImpl {
+public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
 
 	public ByteArrayOutputStream getBundleActivatorAsOutputStream(
 			List<String> _bundleActivators)

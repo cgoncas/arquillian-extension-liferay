@@ -14,6 +14,7 @@
 
 package org.arquillian.container.osgi.remote.instanceproducer;
 
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
 import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
 
@@ -40,7 +41,15 @@ public class OSGiAllInBundleInstanceProducer {
 
 		_manifestManagerInstanceProducer.set(
 			serviceLoader.onlyOne(ManifestManager.class));
+
+		_bundleActivatorsManagerInstanceProducer.set(
+			serviceLoader.onlyOne(BundleActivatorsManager.class));
 	}
+
+	@ApplicationScoped
+	@Inject
+	private InstanceProducer<BundleActivatorsManager>
+		_bundleActivatorsManagerInstanceProducer;
 
 	@ApplicationScoped
 	@Inject

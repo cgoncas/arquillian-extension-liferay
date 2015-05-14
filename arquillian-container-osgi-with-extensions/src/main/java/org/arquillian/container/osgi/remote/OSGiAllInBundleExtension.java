@@ -16,6 +16,8 @@ package org.arquillian.container.osgi.remote;
 
 import org.arquillian.container.osgi.remote.bundleclasspath.BundleClassPathAuxiliaryAppender;
 import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
@@ -50,6 +52,9 @@ public class OSGiAllInBundleExtension implements LoadableExtension {
 			ImportPackageManager.class, ImportPackageManagerImpl.class);
 
 		builder.service(ManifestManager.class, ManifestManagerImpl.class);
+
+		builder.service(
+			BundleActivatorsManager.class, BundleActivatorsManagerImpl.class);
 
 		builder.observer(OSGiAllInBundleExtension.class);
 	}
