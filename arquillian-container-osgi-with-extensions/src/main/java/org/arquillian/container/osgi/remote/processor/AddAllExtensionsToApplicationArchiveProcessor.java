@@ -146,7 +146,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		ManifestManager manifestManager = _manifestManagerInstance.get();
 
 		Manifest manifest =
-			manifestManager.addAttributeValueToListAttributeInManifest(
+			manifestManager.putAttibuteValue(
 				getManifest(javaArchive), "Import-Package", extensionsImports);
 
 		replaceManifest(javaArchive, manifest);
@@ -163,7 +163,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			Manifest manifest = getManifest(javaArchive);
 
 			manifest =
-				importPackageManager.getImportsNotIncludedInClassPath(
+				importPackageManager.cleanRepeatedImports(
 					manifest, auxiliaryArchives);
 
 			replaceManifest(javaArchive, manifest);
@@ -226,7 +226,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			ManifestManager manifestManager = _manifestManagerInstance.get();
 
-			Manifest manifest = manifestManager.addAttributeValueToListAttributeInManifest(
+			Manifest manifest = manifestManager.putAttibuteValue(
 				getManifest(javaArchive), "Bundle-ClassPath", ".", path);
 
 			replaceManifest(javaArchive, manifest);
@@ -246,7 +246,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 					String[] importValues = value.split(",");
 
 					manifest =
-						manifestManager.addAttributeValueToListAttributeInManifest(
+						manifestManager.putAttibuteValue(
 							manifest, "Import-Package", importValues);
 
 					replaceManifest(javaArchive, manifest);

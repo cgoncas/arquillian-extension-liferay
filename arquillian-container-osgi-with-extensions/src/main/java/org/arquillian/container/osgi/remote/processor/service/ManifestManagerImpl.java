@@ -27,8 +27,8 @@ import java.util.jar.Manifest;
  */
 public class ManifestManagerImpl implements ManifestManager {
 
-	public Manifest addAttributeValueToListAttributeInManifest(
-			Manifest manifest, String attributeName, String ... attributeValue)
+	public Manifest putAttibuteValue(
+			Manifest manifest, String attributeName, String... attributeValue)
 		throws IOException {
 
 		Attributes mainAttributes = manifest.getMainAttributes();

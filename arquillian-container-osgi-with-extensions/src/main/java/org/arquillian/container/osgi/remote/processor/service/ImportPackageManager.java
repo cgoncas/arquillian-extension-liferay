@@ -26,7 +26,7 @@ import org.jboss.shrinkwrap.api.Archive;
  */
 public interface ImportPackageManager {
 
-	public Manifest getImportsNotIncludedInClassPath(
+	public Manifest cleanRepeatedImports(
 			Manifest manifest, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException;
 

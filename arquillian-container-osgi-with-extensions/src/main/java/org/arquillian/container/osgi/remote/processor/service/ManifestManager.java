@@ -23,7 +23,7 @@ import java.util.jar.Manifest;
  */
 public interface ManifestManager {
 
-	public Manifest addAttributeValueToListAttributeInManifest(
+	public Manifest putAttibuteValue(
 			Manifest manifest, String attributeName, String ... attributeValue)
 		throws IOException;
 

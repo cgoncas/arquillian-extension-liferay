@@ -42,7 +42,7 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
  */
 public class ImportPackageManagerImpl implements ImportPackageManager {
 
-	public Manifest getImportsNotIncludedInClassPath(
+	public Manifest cleanRepeatedImports(
 			Manifest manifest, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {
 
@@ -78,7 +78,7 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 
 		ManifestManager manifestManager = _manifestManagerInstance.get();
 
-		manifest = manifestManager.addAttributeValueToListAttributeInManifest(
+		manifest = manifestManager.putAttibuteValue(
 			manifest, "Import-Package", resultImports.toArray(
 				new String[resultImports.size()]));
 
