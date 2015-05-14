@@ -24,12 +24,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.Node;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 /**
  * @author Cristina González
  */
 public class BundleActivatorsManagerImpl implements BundleActivatorsManager {
+
+	public List<String> getBundleActivators(Archive archive, String fileName)
+		throws IOException {
+
+		Node node = archive.get(fileName);
+
+		List<String> bundleActivators = new ArrayList<>();
+
+		if (node != null) {
+			Asset asset = node.getAsset();
+
+			bundleActivators.addAll(getBundleActivators(asset.openStream()));
+		}
+
+		return bundleActivators;
+	}
 
 	public List<String> getBundleActivators(InputStream is) throws IOException {
 		List<String> bundleActivators = new ArrayList<>();

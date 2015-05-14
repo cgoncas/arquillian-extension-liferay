@@ -111,19 +111,12 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 			JavaArchive javaArchive, String bundleActivatorValue)
 		throws IOException {
 
-		Node node = javaArchive.get(_ACTIVATORS_FILE);
-
 		BundleActivatorsManager bundleActivatorsManager =
 			_bundleActivatorsManagerInstance.get();
 
-		List<String> bundleActivators = new ArrayList<>();
-
-		if (node != null) {
-			Asset asset = node.getAsset();
-
-			bundleActivators = bundleActivatorsManager.getBundleActivators(
-				asset.openStream());
-		}
+		List<String> bundleActivators =
+			bundleActivatorsManager.getBundleActivators(
+				javaArchive, _ACTIVATORS_FILE);
 
 		bundleActivators.add(bundleActivatorValue);
 
