@@ -78,7 +78,7 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 
 		ManifestManager manifestManager = _manifestManagerInstance.get();
 
-		manifest = manifestManager.putAttibuteValue(
+		manifest = manifestManager.putAttributeValue(
 			manifest, "Import-Package", resultImports.toArray(
 				new String[resultImports.size()]));
 

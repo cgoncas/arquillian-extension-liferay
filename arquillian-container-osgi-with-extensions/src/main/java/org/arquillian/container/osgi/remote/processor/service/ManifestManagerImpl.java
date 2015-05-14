@@ -43,8 +43,8 @@ public class ManifestManagerImpl implements ManifestManager {
 		return new Manifest(manifestAsset.openStream());
 	}
 
-	public Manifest putAttibuteValue(
-			Manifest manifest, String attributeName, String... attributeValue)
+	public Manifest putAttributeValue(
+		Manifest manifest, String attributeName, String... attributeValue)
 		throws IOException {
 
 		Attributes mainAttributes = manifest.getMainAttributes();

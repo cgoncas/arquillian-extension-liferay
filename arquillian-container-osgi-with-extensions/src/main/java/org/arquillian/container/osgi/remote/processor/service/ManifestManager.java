@@ -28,7 +28,7 @@ public interface ManifestManager {
 
 	public Manifest getManifest(JavaArchive javaArchive) throws IOException;
 
-	public Manifest putAttibuteValue(
+	public Manifest putAttributeValue(
 			Manifest manifest, String attributeName, String... attributeValue)
 		throws IOException;
 

@@ -69,7 +69,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			validateBundleArchive(javaArchive);
 
-			addOsgiImports(javaArchive);
+			addOSGiImports(javaArchive);
 
 			addArquillianDependencies(javaArchive);
 
@@ -140,7 +140,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		javaArchive.add(byteArrayAsset, _ACTIVATORS_FILE);
 	}
 
-	private void addOsgiImports(JavaArchive javaArchive) throws IOException {
+	private void addOSGiImports(JavaArchive javaArchive) throws IOException {
 		String[] extensionsImports = {
 			"org.osgi.framework" , "javax.management" , "javax.management.*" ,
 			"javax.naming.*" , "org.osgi.service.packageadmin" ,
@@ -149,7 +149,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		ManifestManager manifestManager = _manifestManagerInstance.get();
 
 		Manifest manifest =
-			manifestManager.putAttibuteValue(
+			manifestManager.putAttributeValue(
 				manifestManager.getManifest(javaArchive), "Import-Package",
 				extensionsImports);
 
@@ -224,7 +224,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			ManifestManager manifestManager = _manifestManagerInstance.get();
 
-			Manifest manifest = manifestManager.putAttibuteValue(
+			Manifest manifest = manifestManager.putAttributeValue(
 				manifestManager.getManifest(javaArchive), "Bundle-ClassPath", ".", path);
 
 			manifestManager.replaceManifest(javaArchive, manifest);
@@ -244,7 +244,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 					String[] importValues = value.split(",");
 
 					manifest =
-						manifestManager.putAttibuteValue(
+						manifestManager.putAttributeValue(
 							manifest, "Import-Package", importValues);
 
 					manifestManager.replaceManifest(javaArchive, manifest);
@@ -315,11 +315,11 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		"/META-INF/services/" +
 			RemoteLoadableExtension.class.getCanonicalName();
 
-	@Inject
-	private Instance<BundleActivatorsManager> _bundleActivatorsManagerInstance;
-
 	private static final Logger _logger = LoggerFactory.getLogger(
 		ApplicationArchiveProcessor.class);
+
+	@Inject
+	private Instance<BundleActivatorsManager> _bundleActivatorsManagerInstance;
 
 	@Inject
 	private Instance<ImportPackageManager> _importPackageManagerInstance;
