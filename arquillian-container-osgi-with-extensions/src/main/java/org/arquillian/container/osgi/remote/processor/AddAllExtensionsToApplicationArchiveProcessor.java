@@ -76,7 +76,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			handleAuxiliaryArchives(javaArchive, auxiliaryArchives);
 
-			deleteImportsIncludedInClassPath(javaArchive, auxiliaryArchives);
+			cleanRepeatedImports(javaArchive, auxiliaryArchives);
 
 			ManifestManager manifestManager = _manifestManagerInstance.get();
 
@@ -155,7 +155,7 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 		manifestManager.replaceManifest(javaArchive, manifest);
 	}
 
-	private void deleteImportsIncludedInClassPath(
+	private void cleanRepeatedImports(
 			JavaArchive javaArchive, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {
 
