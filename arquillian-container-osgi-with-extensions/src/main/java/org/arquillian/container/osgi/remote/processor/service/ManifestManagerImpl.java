@@ -14,8 +14,51 @@
 
 package org.arquillian.container.osgi.remote.processor.service;
 
+import java.io.IOException;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
+
 /**
  * @author Cristina González
  */
 public class ManifestManagerImpl implements ManifestManager {
+
+	public Manifest addAttributeValueToListAttributeInManifest(
+			Manifest manifest, String attributeName, String ... attributeValue)
+		throws IOException {
+
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String attributeValues = mainAttributes.getValue(attributeName);
+
+		Set<String> attributeValueSet = new HashSet<>();
+
+		if (attributeValues != null) {
+			attributeValueSet.addAll(Arrays.asList(attributeValues.split(",")));
+		}
+
+		attributeValueSet.addAll(Arrays.asList(attributeValue));
+
+		StringBuilder sb = new StringBuilder();
+
+		for (String value : attributeValueSet) {
+			sb.append(value);
+			sb.append(",");
+		}
+
+		if (!attributeValueSet.isEmpty()) {
+			sb.setLength(sb.length() - 1);
+		}
+
+		attributeValues = sb.toString();
+
+		mainAttributes.putValue(attributeName, attributeValues);
+
+		return manifest;
+	}
+
 }

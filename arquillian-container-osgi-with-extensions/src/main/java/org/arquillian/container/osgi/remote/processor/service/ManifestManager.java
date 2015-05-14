@@ -14,8 +14,17 @@
 
 package org.arquillian.container.osgi.remote.processor.service;
 
+import java.io.IOException;
+
+import java.util.jar.Manifest;
+
 /**
  * @author Cristina González
  */
 public interface ManifestManager {
+
+	public Manifest addAttributeValueToListAttributeInManifest(
+			Manifest manifest, String attributeName, String ... attributeValue)
+		throws IOException;
+
 }
