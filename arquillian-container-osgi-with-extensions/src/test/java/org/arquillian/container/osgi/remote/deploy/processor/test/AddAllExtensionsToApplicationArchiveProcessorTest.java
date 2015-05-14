@@ -488,6 +488,20 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			e.printStackTrace();
 		}
 
+		Field manifestManagerInstanceinImportPackageManager =
+			ImportPackageManagerImpl.class.getDeclaredField(
+				"_manifestManagerInstance");
+		manifestManagerInstanceinImportPackageManager.setAccessible(true);
+
+		try {
+			manifestManagerInstanceinImportPackageManager.set(
+				importPackageManagerDummyInstance.get(),
+				manifestManagerDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
 		return addAllExtensionsToApplicationArchiveProcessor;
 	}
 
