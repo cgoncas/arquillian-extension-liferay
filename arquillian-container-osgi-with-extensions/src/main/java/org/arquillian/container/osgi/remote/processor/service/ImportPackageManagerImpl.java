@@ -29,7 +29,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
+import org.jboss.arquillian.core.api.Instance;
+import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 
@@ -38,15 +42,21 @@ import org.jboss.shrinkwrap.api.exporter.ZipExporter;
  */
 public class ImportPackageManagerImpl implements ImportPackageManager {
 
-	public List<String> getImportsNotIncludedInClassPath(
-			String importsInManifest, Collection<Archive<?>> auxiliaryArchives)
+	public Manifest getImportsNotIncludedInClassPath(
+			Manifest manifest, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException {
 
 		List<String> auxiliaryArchivesPackages = getAuxiliaryArchivesPackages(
 			auxiliaryArchives);
 
+		Attributes mainAttributes = manifest.getMainAttributes();
+
+		String importPackages = mainAttributes.getValue("Import-Package");
+
+		mainAttributes.remove(new Attributes.Name("Import-Package"));
+
 		Map<String, Set<String>> importsWithDirectivesMap =
-			toImportsWithDirectivesMap(importsInManifest);
+			toImportsWithDirectivesMap(importPackages);
 
 		List<String> resultImports = new ArrayList<>();
 
@@ -66,7 +76,13 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 			resultImports.add(sb.toString());
 		}
 
-		return resultImports;
+		ManifestManager manifestManager = _manifestManagerInstance.get();
+
+		manifest = manifestManager.addAttributeValueToListAttributeInManifest(
+			manifest, "Import-Package", resultImports.toArray(
+				new String[resultImports.size()]));
+
+		return manifest;
 	}
 
 	private List<String> getAuxiliaryArchivesPackages(
@@ -120,5 +136,8 @@ public class ImportPackageManagerImpl implements ImportPackageManager {
 
 		return packagesNameToDirectives;
 	}
+
+	@Inject
+	private Instance<ManifestManager> _manifestManagerInstance;
 
 }

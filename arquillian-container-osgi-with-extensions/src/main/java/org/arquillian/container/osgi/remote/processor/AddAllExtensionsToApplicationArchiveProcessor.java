@@ -162,25 +162,9 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 			Manifest manifest = getManifest(javaArchive);
 
-			Attributes mainAttributes = manifest.getMainAttributes();
-
-			String importValues = mainAttributes.getValue("Import-Package");
-
-			mainAttributes.remove(new Attributes.Name("Import-Package"));
-
-			replaceManifest(javaArchive, manifest);
-
-			List<String> importsNotIncludedInClassPath =
-				importPackageManager.getImportsNotIncludedInClassPath(
-					importValues, auxiliaryArchives);
-
-			ManifestManager manifestManager = _manifestManagerInstance.get();
-
 			manifest =
-				manifestManager.addAttributeValueToListAttributeInManifest(
-					getManifest(javaArchive), "Import-Package",
-					importsNotIncludedInClassPath.toArray(
-						new String[importsNotIncludedInClassPath.size()]));
+				importPackageManager.getImportsNotIncludedInClassPath(
+					manifest, auxiliaryArchives);
 
 			replaceManifest(javaArchive, manifest);
 		}

@@ -17,7 +17,7 @@ package org.arquillian.container.osgi.remote.processor.service;
 import java.io.IOException;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.jar.Manifest;
 
 import org.jboss.shrinkwrap.api.Archive;
 
@@ -26,8 +26,8 @@ import org.jboss.shrinkwrap.api.Archive;
  */
 public interface ImportPackageManager {
 
-	public List<String> getImportsNotIncludedInClassPath(
-			String importsInManifest, Collection<Archive<?>> auxiliaryArchives)
+	public Manifest getImportsNotIncludedInClassPath(
+			Manifest manifest, Collection<Archive<?>> auxiliaryArchives)
 		throws IOException;
 
 }
