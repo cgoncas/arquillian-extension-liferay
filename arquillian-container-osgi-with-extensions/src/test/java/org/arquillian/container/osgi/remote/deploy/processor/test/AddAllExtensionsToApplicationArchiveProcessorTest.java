@@ -14,6 +14,7 @@
 
 package org.arquillian.container.osgi.remote.deploy.processor.test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import java.lang.reflect.Field;
@@ -29,9 +30,11 @@ import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyInstanceProducerImpl;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithJarAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchive;
+import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator;
 import org.arquillian.container.osgi.remote.deploy.processor.test.mock.DummyServiceLoaderWithoutAuxiliaryArchive;
 import org.arquillian.container.osgi.remote.deploy.processor.test.util.ManifestUtil;
 import org.arquillian.container.osgi.remote.processor.AddAllExtensionsToApplicationArchiveProcessor;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ManifestManagerImpl;
 
@@ -44,6 +47,8 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import org.osgi.framework.BundleActivator;
 
 /**
  * @author Cristina González
@@ -140,6 +145,56 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 		importsPackageArray.contains("org.osgi.util.tracker");
 		importsPackageArray.contains("javax.management");
 		importsPackageArray.contains("org.osgi.service.startlevel");
+	}
+
+	@Test
+	public void testGenerateDeploymentWithExtensionsWithActivator()
+		throws Exception {
+
+		//given:
+		JavaArchive javaArchive = getJavaArchive();
+
+		javaArchive.addClass(this.getClass());
+
+		ManifestUtil.createManifest(javaArchive);
+
+		TestClass testClass = new TestClass(this.getClass());
+
+		String activator = "activator";
+
+		//when:
+		AddAllExtensionsToApplicationArchiveProcessor processor =
+			getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(activator);
+
+		processor.process(javaArchive, testClass);
+
+		//then:
+		Node node = javaArchive.get(_ACTIVATORS_FILE);
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			node);
+
+		Asset asset = node.getAsset();
+
+		Assert.assertNotNull(
+			"The deployment java archive doesn't contain an activator file",
+			asset);
+
+		ByteArrayInputStream byteArrayInputStream =
+			(ByteArrayInputStream)asset.openStream();
+
+		int n = byteArrayInputStream.available();
+
+		byte[] bytes = new byte[n];
+
+		byteArrayInputStream.read(bytes, 0, n);
+
+		String activatorsFileContent = new String(bytes);
+
+		Assert.assertEquals(
+			"The activators file content of the activators is not OK",
+			activator, activatorsFileContent);
 	}
 
 	@Test
@@ -502,6 +557,26 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 			e.printStackTrace();
 		}
 
+		Field bundleActivatorsManagerInstance =
+			AddAllExtensionsToApplicationArchiveProcessor.class.
+				getDeclaredField("_bundleActivatorsManagerInstance");
+		bundleActivatorsManagerInstance.setAccessible(true);
+
+		DummyInstanceProducerImpl bundleActivatorManagerDummyInstance =
+			new DummyInstanceProducerImpl();
+
+		bundleActivatorManagerDummyInstance.set(
+			new BundleActivatorsManagerImpl());
+
+		try {
+			bundleActivatorsManagerInstance.set(
+				addAllExtensionsToApplicationArchiveProcessor,
+				bundleActivatorManagerDummyInstance);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
 		return addAllExtensionsToApplicationArchiveProcessor;
 	}
 
@@ -522,10 +597,23 @@ public class AddAllExtensionsToApplicationArchiveProcessorTest {
 	}
 
 	private AddAllExtensionsToApplicationArchiveProcessor
+		getProcessorWithOSGIJarAuxiliaryArchiveWithActivator(
+			String activator)
+		throws IllegalAccessException, NoSuchFieldException {
+
+		return getProcessor(
+			new DummyServiceLoaderWithOSGIBundleAuxiliaryArchiveWithActivator(
+				activator));
+	}
+
+	private AddAllExtensionsToApplicationArchiveProcessor
 			getProcessorWithoutAuxiliaryArchive()
 		throws IllegalAccessException, NoSuchFieldException {
 
 		return getProcessor(new DummyServiceLoaderWithoutAuxiliaryArchive());
 	}
+
+	private static final String _ACTIVATORS_FILE =
+		"/META-INF/services/" + BundleActivator.class.getCanonicalName();
 
 }
