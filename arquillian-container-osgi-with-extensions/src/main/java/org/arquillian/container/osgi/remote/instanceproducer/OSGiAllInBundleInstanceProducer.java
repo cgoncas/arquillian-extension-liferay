@@ -15,6 +15,7 @@
 package org.arquillian.container.osgi.remote.instanceproducer;
 
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
+import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
 
 import org.jboss.arquillian.config.descriptor.api.ArquillianDescriptor;
 import org.jboss.arquillian.core.api.Instance;
@@ -36,12 +37,19 @@ public class OSGiAllInBundleInstanceProducer {
 
 		_importPackageManagerInstanceProducer.set(
 			serviceLoader.onlyOne(ImportPackageManager.class));
+
+		_manifestManagerInstanceProducer.set(
+			serviceLoader.onlyOne(ManifestManager.class));
 	}
 
 	@ApplicationScoped
 	@Inject
 	private InstanceProducer<ImportPackageManager>
 		_importPackageManagerInstanceProducer;
+
+	@ApplicationScoped
+	@Inject
+	private InstanceProducer<ManifestManager> _manifestManagerInstanceProducer;
 
 	@Inject
 	private Instance<ServiceLoader> _serviceLoaderInstance;
