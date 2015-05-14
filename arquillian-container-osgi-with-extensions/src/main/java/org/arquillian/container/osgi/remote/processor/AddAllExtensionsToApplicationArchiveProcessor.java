@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.arquillian.container.osgi.remote.activator.ArquillianBundleActivator;
-import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManager;
+import org.arquillian.container.osgi.remote.processor.service.BundleActivatorsManagerImpl;
 import org.arquillian.container.osgi.remote.processor.service.ImportPackageManager;
 import org.arquillian.container.osgi.remote.processor.service.ManifestManager;
 
@@ -114,8 +114,8 @@ public class AddAllExtensionsToApplicationArchiveProcessor
 
 		Node node = javaArchive.get(_ACTIVATORS_FILE);
 
-		BundleActivatorsManager bundleActivatorsManager =
-			new BundleActivatorsManager();
+		BundleActivatorsManagerImpl bundleActivatorsManager =
+			new BundleActivatorsManagerImpl();
 
 		List<String> bundleActivators = new ArrayList<>();
 
