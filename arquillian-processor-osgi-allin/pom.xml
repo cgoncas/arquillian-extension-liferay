@@ -9,10 +9,10 @@
 	</parent>
 
 	<groupId>org.arquillian.liferay</groupId>
-	<artifactId>arquillian-container-osgi-with-extensions</artifactId>
+	<artifactId>arquillian-processor-osgi-allin</artifactId>
 	<version>1.0.0.Final-SNAPSHOT</version>
-	<name>Arquillian Liferay Container Adapter</name>
-	<description>Arquillian Container OSGi that allow to use standars extensions</description>
+	<name>Arquillian Liferay Processor OSGi All In</name>
+	<description>Arquillian Processor OSGi that allow to use standars extensions</description>
 
 	<dependencies>
 		<dependency>
