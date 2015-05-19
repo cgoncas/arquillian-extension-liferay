@@ -56,7 +56,7 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 			return (Collection<T>)dummyAuxiliaryArchives;
 		}
 
-		return new ArrayList<>();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class DummyServiceLoaderWithOSGIBundleAuxiliaryArchive
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	private final List<String> _imports;

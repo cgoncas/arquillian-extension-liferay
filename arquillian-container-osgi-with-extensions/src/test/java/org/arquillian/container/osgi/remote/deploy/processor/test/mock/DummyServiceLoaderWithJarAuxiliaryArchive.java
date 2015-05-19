@@ -45,7 +45,7 @@ public class DummyServiceLoaderWithJarAuxiliaryArchive
 			return (Collection<T>)dummyAuxiliaryArchives;
 		}
 
-		return new ArrayList<>();
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class DummyServiceLoaderWithJarAuxiliaryArchive
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class DummyServiceLoaderWithJarAuxiliaryArchive
 			return (T)new DummyAuxiliaryArchiveAppender();
 		}
 
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	private class DummyAuxiliaryArchiveAppender
