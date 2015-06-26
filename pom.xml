@@ -153,4 +153,12 @@
 	<module>arquillian-processor-osgi-allin</module>
 </modules>
 
+<repositories>
+	<repository>
+		<id>jboss-maven2-release-repository</id>
+		<name>JBoss Repository</name>
+		<url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+	</repository>
+</repositories>
+
 </project>
