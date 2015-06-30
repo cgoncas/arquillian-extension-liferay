@@ -69,8 +69,16 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 		Set<BundleActivator> bundleActivators = loadActivators();
 
-		for (BundleActivator bundleActivator : bundleActivators) {
-			bundleActivator.start(context);
+		try {
+			for (BundleActivator bundleActivator : bundleActivators) {
+				bundleActivator.start(context);
+			}
+		}
+		catch (Throwable t) {
+			testRunner.unregisterMBean(mbeanServer);
+
+			throw new IllegalStateException(
+				"Not all bundle activators were started");
 		}
 	}
 
