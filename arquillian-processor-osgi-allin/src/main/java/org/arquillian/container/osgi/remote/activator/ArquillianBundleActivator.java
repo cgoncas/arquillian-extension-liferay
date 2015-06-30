@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -69,8 +70,30 @@ public class ArquillianBundleActivator implements BundleActivator {
 
 		Set<BundleActivator> bundleActivators = loadActivators();
 
-		for (BundleActivator bundleActivator : bundleActivators) {
-			bundleActivator.start(context);
+		List<BundleActivator> successfullyExecutedBundleActivators =
+			new ArrayList<>();
+
+		try {
+			for (BundleActivator bundleActivator : bundleActivators) {
+				bundleActivator.start(context);
+
+				successfullyExecutedBundleActivators.add(bundleActivator);
+			}
+		}
+		catch (Throwable t) {
+			try {
+				for (BundleActivator successfullyExecutedBundleActivator :
+					successfullyExecutedBundleActivators) {
+
+					successfullyExecutedBundleActivator.stop(context);
+				}
+			}
+			finally {
+				testRunner.unregisterMBean(mbeanServer);
+
+				throw new IllegalStateException(
+					"Not all bundle activators were started");
+			}
 		}
 	}
 
