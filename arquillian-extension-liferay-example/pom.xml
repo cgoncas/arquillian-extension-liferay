@@ -16,10 +16,12 @@
 
 	<properties>
 		<liferay.home>${project.basedir}/test-resources/liferay/liferay-portal-${version.liferay}</liferay.home>
+		<liferay.started.indicator.file>${liferay.home}/liferay.started</liferay.started.indicator.file>
+		<liferay.executable.start>${liferay.home}/tomcat-7.0.62/bin/startup.sh</liferay.executable.start>
+		<liferay.executable.stop>${liferay.home}/tomcat-7.0.62/bin/shutdown.sh</liferay.executable.stop>
 		<version.liferay>7.0-ce-m6</version.liferay>
 		<url.liferay>project/lportal/files/Liferay%20Portal/7.0.0%20M7/liferay-portal-tomcat-7.0-ce-m7-20150819114119178.zip</url.liferay>
 	</properties>
-
 
 	<build>
 		<testResources>
@@ -150,6 +152,98 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>start-liferay</id>
+						<phase>process-test-resources</phase>
+						<configuration>
+							<target>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+								</taskdef>
+								<if>
+									<available file="${liferay.started.indicator.file}" />
+									<then>
+										<fail>
+											A Liferay instance is already running or file '${liferay.started.indicator.file}' was not deleted!
+											Execute 'mvn clean' to solve this problem.
+										</fail>
+									</then>
+									<else>
+										<echo message="Start Liferay" />
+										<exec executable="${liferay.executable.start}" />
+										<touch file="${liferay.started.indicator.file}" />
+										<sleep minutes="2" />
+									</else>
+								</if>
+							</target>
+							<skip>${skipTests}</skip>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop-liferay</id>
+						<phase>test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+								</taskdef>
+								<if>
+									<available file="${liferay.started.indicator.file}" />
+									<then>
+										<echo message="Stop Liferay" />
+										<exec executable="${liferay.executable.stop}" />
+										<delete file="${liferay.started.indicator.file}" />
+									</then>
+								</if>
+							</target>
+							<skip>${skipTests}</skip>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop-karaf-clean</id>
+						<phase>pre-clean</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+								</taskdef>
+								<if>
+									<available file="${liferay.started.indicator.file}" />
+									<then>
+										<echo message="Liferay karaf" />
+										<exec executable="${liferay.executable.stop}" />
+										<delete file="${liferay.started.indicator.file}" />
+									</then>
+								</if>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>ant-contrib</groupId>
+						<artifactId>ant-contrib</artifactId>
+						<version>20020829</version>
+					</dependency>
+					<dependency>
+						<groupId>org.tigris.antelope</groupId>
+						<artifactId>antelopetasks</artifactId>
+						<version>3.2.10</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 
 		</plugins>
