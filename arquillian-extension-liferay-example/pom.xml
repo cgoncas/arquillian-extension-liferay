@@ -94,6 +94,30 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>copy--jmx-config</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/test-resources/liferay/liferay-portal-7.0-ce-m6/tomcat-7.0.62/bin</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/test-resources/liferay/config/bin</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
