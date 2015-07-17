@@ -115,6 +115,40 @@
 							</resources>
 						</configuration>
 					</execution>
+
+					<execution>
+						<id>copy--tomcat-manager</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/test-resources/liferay/liferay-portal-7.0-ce-m6/tomcat-7.0.62/webapps/manager</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/test-resources/tomcat/apache-tomcat-7.0.62/webapps/manager</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>copy--tomcat-manager-config</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.basedir}/test-resources/liferay/liferay-portal-7.0-ce-m6/tomcat-7.0.62/conf</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/test-resources/liferay/config/conf</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
