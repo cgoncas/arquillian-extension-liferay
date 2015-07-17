@@ -23,6 +23,26 @@
 		<url.liferay>project/lportal/files/Liferay%20Portal/7.0.0%20M7/liferay-portal-tomcat-7.0-ce-m7-20150819114119178.zip</url.liferay>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.arquillian.liferay</groupId>
+			<artifactId>arquillian-container-liferay</artifactId>
+			<version>1.0.0.Final-SNAPSHOT</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.arquillian.junit</groupId>
+			<artifactId>arquillian-junit-container</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<testResources>
 			<testResource>
