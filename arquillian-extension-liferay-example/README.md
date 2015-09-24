@@ -124,6 +124,142 @@ public class SimpleTest {
 }
 ```
 
+##Creating a Liferay Application
+
+### Configuring Liferay's maven-plugin in pom.xml
+
+Our application will be a valid OSGi bundle:
+```xml
+<packaging>bundle</packaging>
+```
+
+Define common variables to reuse version values:
+```xml
+	<properties>
+...
+		<liferay.version>7.0.0-m7</liferay.version>
+		<liferay.maven.plugin.version>7.0.0-SNAPSHOT</liferay.maven.plugin.version>
+		<liferay.auto.deploy.dir>${liferay.app.server.parent.dir}/deploy</liferay.auto.deploy.dir>
+		<liferay.app.server.deploy.dir>${liferay.home}/webapps</liferay.app.server.deploy.dir>
+		<liferay.app.server.lib.global.dir>${liferay.home}/lib/ext</liferay.app.server.lib.global.dir>
+		<liferay.app.server.parent.dir>${project.basedir}/test-resources/liferay</liferay.app.server.parent.dir>
+		<liferay.app.server.portal.dir>${liferay.home}/webapps/ROOT</liferay.app.server.portal.dir>
+...
+	</properties>
+```
+
+Define liferay-maven-plugin dependencies:
+```xml
+...
+	<dependencies>
+	....
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-service</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>util-bridges</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>util-taglib</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>util-java</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.portlet</groupId>
+			<artifactId>portlet-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		....
+	</dependencies>
+...	
+```
+
+Define liferay-maven-plugin build steps, including the Maven Bundle Plugin to package the application as an OSGi bundle:
+```xml
+...
+	<build>
+		<plugins>
+...
+			<plugin>
+				<groupId>com.liferay.maven.plugins</groupId>
+				<artifactId>liferay-maven-plugin</artifactId>
+				<version>${liferay.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>build-css</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<autoDeployDir>${liferay.auto.deploy.dir}</autoDeployDir>
+					<appServerDeployDir>${liferay.app.server.deploy.dir}</appServerDeployDir>
+					<appServerLibGlobalDir>${liferay.app.server.lib.global.dir}</appServerLibGlobalDir>
+					<appServerPortalDir>${liferay.app.server.portal.dir}</appServerPortalDir>
+					<liferayVersion>${liferay.version}</liferayVersion>
+					<pluginType>portlet</pluginType>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Export-Package>org.arquillian.liferay.sample.api</Export-Package>
+						<Private-Package>org.arquillian.liferay.sample.internal.*</Private-Package>
+						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Bundle-Activator>org.arquillian.liferay.sample.activator.SampleBundleActivator</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+...
+		</plugins>
+	</build>
+```
+
 ## Create a functional test in Liferay with the Arquillian Liferay Extension
 
 To create a functional test in Liferay with the Arquillian Liferay Extension we are going to follow this [guide](http://arquillian.org/guides/functional_testing_using_graphene/)
