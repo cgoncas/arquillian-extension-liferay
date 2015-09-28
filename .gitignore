@@ -20,3 +20,5 @@ test-output/
 
 # JBoss AS
 transaction.log
+
+arquillian-extension-liferay-example/src/test/resources/zip

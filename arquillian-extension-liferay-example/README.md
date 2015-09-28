@@ -2,9 +2,9 @@
 
 ##What is this?
 
-This is an example of the use of the Arquillian Liferay Extension.
+This is an example of how to use the Arquillian Liferay Extension.
 
-This example will be executed in the next environment:
+This example will be executed in the following environment:
 
 * Tomcat Server 7.0.62
   * JMX enabled and configured.
@@ -18,9 +18,9 @@ This example will be executed in the next environment:
 
 #### Enable and Configure JMX in tomcat
 
-You can follow this [guide](https://tomcat.apache.org/tomcat-7.0-doc/monitoring.html#Enabling_JMX_Remote) to enable your JMX congifuration in tomcat 
+You can follow this [guide](https://tomcat.apache.org/tomcat-7.0-doc/monitoring.html#Enabling_JMX_Remote) to enable your JMX configuration in tomcat 
 
-In the next example you can see a example of a **setenv** file that enable JMX in a Tomcat in the port 8099 whithout authentication:
+In the next example you can see a example of a **setenv** file that enable JMX in a Tomcat in the port 8099 without authentication:
 
 ```sh
 CATALINA_OPTS="$CATALINA_OPTS -Dfile.encoding=UTF8 -Djava.net.preferIPv4Stack=true -Dorg.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false -Duser.timezone=GMT -Xmx1024m -XX:MaxPermSize=256m"
@@ -48,9 +48,9 @@ The Tomcat Manager is installed by default on context path /manager.
 </tomcat-users>
 ```
 
-In the above example, you can see how we have created a user with the username **tomcat** and the password **tomcat** that has the roles **tomcat,manager-gui,manager-script,manager-jmx,manager-status**, these roles are mandatory to execute Arquillian test using the Arquillian Liferay Extension.
+In the above example, you can see how we have created a user with the username **tomcat** and the password **tomcat** that has the roles **tomcat,manager-gui,manager-script,manager-jmx,manager-status**, these roles are mandatory to execute Arquillian tests using the Arquillian Liferay Extension.
 
-By default this extension needs that the user and password are both **tomcat**. This behaviour can be configured in a custom arquilliam.xml file. We will see how to configure the custom extension properties in other chapter.
+By default this extension needs that the user and password are both **tomcat**. This behaviour can be configured in a custom arquillian.xml file. We will see how to configure the custom extension properties in other chapter.
 
 ## Create a test in Liferay with the Arquillian Liferay Extension
 
@@ -122,6 +122,142 @@ public class SimpleTest {
 	}
 
 }
+```
+
+##Creating a Liferay Application
+
+### Configuring Liferay's maven-plugin in pom.xml
+
+Our application will be a valid OSGi bundle:
+```xml
+<packaging>bundle</packaging>
+```
+
+Define common variables to reuse version values:
+```xml
+	<properties>
+...
+		<liferay.version>7.0.0-m7</liferay.version>
+		<liferay.maven.plugin.version>7.0.0-SNAPSHOT</liferay.maven.plugin.version>
+		<liferay.auto.deploy.dir>${liferay.app.server.parent.dir}/deploy</liferay.auto.deploy.dir>
+		<liferay.app.server.deploy.dir>${liferay.home}/webapps</liferay.app.server.deploy.dir>
+		<liferay.app.server.lib.global.dir>${liferay.home}/lib/ext</liferay.app.server.lib.global.dir>
+		<liferay.app.server.parent.dir>${project.basedir}/test-resources/liferay</liferay.app.server.parent.dir>
+		<liferay.app.server.portal.dir>${liferay.home}/webapps/ROOT</liferay.app.server.portal.dir>
+...
+	</properties>
+```
+
+Define liferay-maven-plugin dependencies:
+```xml
+...
+	<dependencies>
+	....
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>portal-service</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>util-bridges</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>util-taglib</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>util-java</artifactId>
+			<version>${liferay.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<version>${osgi.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.portlet</groupId>
+			<artifactId>portlet-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.4</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		....
+	</dependencies>
+...	
+```
+
+Define liferay-maven-plugin build steps, including the Maven Bundle Plugin to package the application as an OSGi bundle:
+```xml
+...
+	<build>
+		<plugins>
+...
+			<plugin>
+				<groupId>com.liferay.maven.plugins</groupId>
+				<artifactId>liferay-maven-plugin</artifactId>
+				<version>${liferay.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>build-css</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<autoDeployDir>${liferay.auto.deploy.dir}</autoDeployDir>
+					<appServerDeployDir>${liferay.app.server.deploy.dir}</appServerDeployDir>
+					<appServerLibGlobalDir>${liferay.app.server.lib.global.dir}</appServerLibGlobalDir>
+					<appServerPortalDir>${liferay.app.server.portal.dir}</appServerPortalDir>
+					<liferayVersion>${liferay.version}</liferayVersion>
+					<pluginType>portlet</pluginType>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Export-Package>org.arquillian.liferay.sample.api</Export-Package>
+						<Private-Package>org.arquillian.liferay.sample.internal.*</Private-Package>
+						<Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+						<Bundle-Activator>org.arquillian.liferay.sample.activator.SampleBundleActivator</Bundle-Activator>
+					</instructions>
+				</configuration>
+			</plugin>
+...
+		</plugins>
+	</build>
 ```
 
 ## Create a functional test in Liferay with the Arquillian Liferay Extension
