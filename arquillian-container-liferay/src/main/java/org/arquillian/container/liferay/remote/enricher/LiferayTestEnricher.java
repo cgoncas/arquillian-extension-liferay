@@ -50,7 +50,15 @@ public class LiferayTestEnricher implements TestEnricher {
 
 		for (Field declaredField : declaredFields) {
 			if (declaredField.isAnnotationPresent(Inject.class)) {
-				injectField(declaredField, testCase);
+				try {
+					injectField(declaredField, testCase);
+				}
+				catch (IllegalAccessException e) {
+					throw new RuntimeException(
+						"It is not possible to inject the field " +
+							e.getMessage(),
+						e);
+				}
 			}
 		}
 	}
@@ -84,7 +92,9 @@ public class LiferayTestEnricher implements TestEnricher {
 		throw new RuntimeException("Test is not running inside BundleContext");
 	}
 
-	private void injectField(Field declaredField, Object testCase) {
+	private void injectField(Field declaredField, Object testCase)
+		throws IllegalAccessException {
+
 		Class<?> componentClass = declaredField.getType();
 
 		Object service = resolve(componentClass, testCase.getClass());
@@ -103,19 +113,14 @@ public class LiferayTestEnricher implements TestEnricher {
 		return bundleContext.getService(serviceReference);
 	}
 
-	private void setField(
-		Field declaredField, Object testCase, Object service) {
+	private void setField(Field declaredField, Object testCase, Object service)
+		throws IllegalAccessException {
 
 		boolean accessible = declaredField.isAccessible();
 
 		declaredField.setAccessible(true);
 
-		try {
-			declaredField.set(testCase, service);
-		}
-		catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		declaredField.set(testCase, service);
 
 		declaredField.setAccessible(accessible);
 	}
