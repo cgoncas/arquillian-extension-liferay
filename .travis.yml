@@ -3,11 +3,15 @@ jdk:
 
 language: java
 
+sudo: false
+
 before_install:
   - pip install --user codecov
 
 install:
-  - travis_wait mvn -DskipTests=true -Dmaven.javadoc.skip=true -B -Vinstall
+  - travis_wait mvn clean
+
+script: ./travis.sh
 
 after_success:
   - codecov
