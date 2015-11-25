@@ -229,6 +229,7 @@
 		<module>arquillian-processor-osgi-allin</module>
 	</modules>
 
+
 	<repositories>
 		<repository>
 			<id>jboss</id>
