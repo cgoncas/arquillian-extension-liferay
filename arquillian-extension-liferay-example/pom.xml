@@ -151,23 +151,6 @@
 						<version>1.1</version>
 						<executions>
 							<execution>
-								<id>clean-tomcat</id>
-								<phase>test-compile</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>${liferay.executable.stop}</executable>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>exec-maven-plugin</artifactId>
-						<version>1.1</version>
-						<executions>
-							<execution>
 								<id>start-tomcat</id>
 								<phase>test-compile</phase>
 								<goals>
